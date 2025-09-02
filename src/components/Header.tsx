@@ -1,8 +1,19 @@
 import { Button } from "@/components/ui/button";
-import { Menu, Search, Sun } from "lucide-react";
+import { Menu, Search, Sun, User, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import treasureLogo from "@/assets/treasure-logo.png";
 
 const Header = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -43,9 +54,35 @@ const Header = () => {
           <Button variant="ghost" size="icon" className="hidden sm:flex">
             <Sun className="h-4 w-4" />
           </Button>
-          <Button variant="default" className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-adventure">
-            Sign Up
-          </Button>
+          
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="hidden sm:flex">
+                  <User className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                  Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button 
+              variant="default" 
+              className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-adventure"
+              onClick={() => navigate('/auth')}
+            >
+              Sign Up
+            </Button>
+          )}
+          
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-4 w-4" />
           </Button>
