@@ -1,10 +1,14 @@
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CourseCategories = () => {
+  const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState("Popular");
+  
   const categories = [
     {
       name: "Popular",
-      active: true,
       courses: [
         { name: "Python", color: "bg-blue-500", emoji: "🐍" },
         { name: "JavaScript", color: "bg-yellow-500", emoji: "⚡" },
@@ -14,7 +18,6 @@ const CourseCategories = () => {
     },
     {
       name: "Web Development",
-      active: false,
       courses: [
         { name: "HTML", color: "bg-orange-500", emoji: "📄" },
         { name: "CSS", color: "bg-blue-500", emoji: "🎨" },
@@ -25,7 +28,6 @@ const CourseCategories = () => {
     },
     {
       name: "Data Science",
-      active: false,
       courses: [
         { name: "Python", color: "bg-blue-500", emoji: "🐍" },
         { name: "NumPy", color: "bg-blue-600", emoji: "🔢" },
@@ -35,7 +37,6 @@ const CourseCategories = () => {
     },
     {
       name: "Mobile Development",
-      active: false,
       courses: [
         { name: "React Native", color: "bg-cyan-500", emoji: "📱" },
         { name: "Flutter", color: "bg-blue-400", emoji: "🦋" },
@@ -62,16 +63,20 @@ const CourseCategories = () => {
         </div>
 
         {/* Category Tabs */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
+        <div className="flex flex-wrap justify-center gap-3 mb-12" role="tablist">
           {categories.map((category) => (
             <Badge
               key={category.name}
-              variant={category.active ? "default" : "outline"}
+              variant={activeCategory === category.name ? "default" : "outline"}
               className={`px-6 py-3 text-sm cursor-pointer transition-adventure ${
-                category.active
+                activeCategory === category.name
                   ? "bg-primary text-primary-foreground shadow-adventure"
                   : "border-primary/30 text-muted-foreground hover:bg-primary/10"
               }`}
+              onClick={() => setActiveCategory(category.name)}
+              role="tab"
+              aria-selected={activeCategory === category.name}
+              aria-label={`Filter courses by ${category.name}`}
             >
               {category.name}
             </Badge>
@@ -80,10 +85,20 @@ const CourseCategories = () => {
 
         {/* Course Languages */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-4xl mx-auto">
-          {categories[0].courses.map((course) => (
+          {categories.find(c => c.name === activeCategory)?.courses.map((course) => (
             <div
               key={course.name}
               className="group relative overflow-hidden rounded-lg gradient-card p-6 text-center cursor-pointer transition-adventure hover:scale-105 hover:shadow-adventure"
+              onClick={() => navigate('/auth')}
+              role="button"
+              tabIndex={0}
+              aria-label={`Start learning ${course.name}`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate('/auth');
+                }
+              }}
             >
               <div className="text-4xl mb-3 group-hover:animate-bounce-subtle">
                 {course.emoji}
@@ -114,6 +129,16 @@ const CourseCategories = () => {
             <div
               key={lang.name}
               className="flex items-center gap-2 p-3 rounded-lg gradient-card hover:bg-primary/10 transition-adventure cursor-pointer group"
+              onClick={() => navigate('/auth')}
+              role="button"
+              tabIndex={0}
+              aria-label={`Learn ${lang.name}`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate('/auth');
+                }
+              }}
             >
               <span className="text-xl group-hover:animate-bounce-subtle">{lang.emoji}</span>
               <span className="text-sm font-medium text-foreground">{lang.name}</span>

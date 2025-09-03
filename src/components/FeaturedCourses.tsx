@@ -87,7 +87,7 @@ const FeaturedCourses = () => {
   }
 
   return (
-    <section className="py-20 px-4">
+    <section id="featured-courses" className="py-20 px-4">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <h2 className="font-heading text-3xl md:text-4xl mb-6 text-foreground">
@@ -176,7 +176,9 @@ const FeaturedCourses = () => {
           <Button 
             size="lg" 
             variant="outline"
+            onClick={() => navigate('/auth')}
             className="border-primary/30 text-primary hover:bg-primary/10 px-8 py-6"
+            aria-label="Explore all available courses"
           >
             🗺️ Explore All Adventures
           </Button>

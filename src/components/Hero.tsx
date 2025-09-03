@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 import heroLandscape from "@/assets/hero-landscape.png";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -39,16 +42,24 @@ const Hero = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
           <Button 
             size="lg" 
+            onClick={() => navigate('/auth')}
             className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-adventure animate-glow px-8 py-6 text-lg font-semibold"
+            aria-label="Start your coding adventure - Sign up or log in"
           >
             🚀 Get Started
           </Button>
           <Button 
             variant="outline" 
             size="lg"
+            onClick={() => {
+              document.querySelector('#featured-courses')?.scrollIntoView({ 
+                behavior: 'smooth' 
+              });
+            }}
             className="border-primary/30 text-primary hover:bg-primary/10 px-8 py-6 text-lg"
+            aria-label="View demo courses"
           >
-            🎮 Watch Demo
+            🎮 View Courses
           </Button>
         </div>
 
