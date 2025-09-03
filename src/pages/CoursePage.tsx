@@ -291,6 +291,7 @@ const CoursePage = () => {
                     onClick={() => handleStartLesson(lesson.id)}
                     variant={lesson.is_completed ? "outline" : "default"}
                     disabled={!userCourse}
+                    aria-label={`${lesson.is_completed ? 'Review' : 'Start'} lesson: ${lesson.title}`}
                   >
                     {lesson.is_completed ? "Review" : "Start"}
                   </Button>

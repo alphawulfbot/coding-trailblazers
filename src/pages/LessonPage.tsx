@@ -207,6 +207,7 @@ const LessonPage = () => {
             variant="ghost" 
             onClick={handleBackToCourse}
             className="flex items-center gap-2"
+            aria-label="Go back to course overview"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Course
@@ -311,6 +312,8 @@ const LessonPage = () => {
                   <Button
                     variant="outline"
                     onClick={() => setShowSolution(!showSolution)}
+                    aria-expanded={showSolution}
+                    aria-controls="solution-content"
                   >
                     {showSolution ? 'Hide' : 'Show'} Solution
                   </Button>
