@@ -242,10 +242,39 @@ const LessonPage = () => {
             <CardHeader>
               <CardTitle>Learn</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="prose max-w-none">
-                <p>{lesson.content?.content || "Welcome to this lesson!"}</p>
+            <CardContent className="space-y-6">
+              <div className="prose max-w-none text-foreground">
+                <p className="text-base leading-relaxed">
+                  {lesson.content?.content || "Welcome to this lesson!"}
+                </p>
               </div>
+
+              {/* Code Example */}
+              {lesson.content?.codeExample && (
+                <div>
+                  <h4 className="font-semibold mb-3 text-foreground">Code Example:</h4>
+                  <pre className="bg-muted p-4 rounded-lg overflow-x-auto border">
+                    <code className="text-sm font-mono text-foreground whitespace-pre-wrap">
+                      {lesson.content.codeExample.replace(/\\n/g, '\n')}
+                    </code>
+                  </pre>
+                </div>
+              )}
+
+              {/* Key Points */}
+              {lesson.content?.keyPoints && (
+                <div>
+                  <h4 className="font-semibold mb-3 text-foreground">Key Points:</h4>
+                  <ul className="space-y-2">
+                    {lesson.content.keyPoints.map((point, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="text-primary font-bold mt-1">•</span>
+                        <span className="text-foreground">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -273,7 +302,8 @@ const LessonPage = () => {
                     value={userCode}
                     onChange={(e) => setUserCode(e.target.value)}
                     placeholder="Write your code here..."
-                    className="font-mono min-h-[200px]"
+                    className="font-mono min-h-[200px] bg-background"
+                    aria-label="Code editor for practice exercise"
                   />
                 </div>
 
@@ -287,9 +317,11 @@ const LessonPage = () => {
                 </div>
 
                 {showSolution && (
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="font-medium mb-2">Solution:</p>
-                    <pre className="font-mono text-sm whitespace-pre-wrap">{exercise.solution}</pre>
+                  <div className="p-4 bg-muted rounded-lg border">
+                    <p className="font-medium mb-2 text-foreground">Solution:</p>
+                    <pre className="font-mono text-sm whitespace-pre-wrap text-foreground">
+                      {exercise.solution.replace(/\\n/g, '\n')}
+                    </pre>
                   </div>
                 )}
               </CardContent>
@@ -302,6 +334,7 @@ const LessonPage = () => {
               onClick={handleCompleteLesson}
               disabled={isCompleted}
               className="bg-primary text-primary-foreground hover:bg-primary/90"
+              aria-label={isCompleted ? "Lesson already completed" : "Mark lesson as complete"}
             >
               {isCompleted ? (
                 <>

@@ -103,7 +103,13 @@ const FeaturedCourses = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {courses.map((course) => (
-            <Card key={course.id} className="group relative overflow-hidden gradient-card border-0 hover:scale-105 transition-adventure cursor-pointer">
+            <Card 
+              key={course.id} 
+              className="group relative overflow-hidden gradient-card border-0 hover:scale-105 transition-adventure cursor-pointer"
+              onClick={() => handleStartCourse(course.id)}
+              role="article"
+              aria-label={`Course: ${course.title}`}
+            >
               {/* Gradient Overlay */}
               <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${course.gradient}`} />
               
@@ -154,7 +160,11 @@ const FeaturedCourses = () => {
                   <Button 
                     size="sm" 
                     className="bg-primary text-primary-foreground hover:bg-primary/90"
-                    onClick={() => handleStartCourse(course.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStartCourse(course.id);
+                    }}
+                    aria-label={`Start ${course.title} course`}
                   >
                     Start Quest
                   </Button>
