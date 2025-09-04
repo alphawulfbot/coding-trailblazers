@@ -332,7 +332,7 @@ const LessonPage = () => {
           )}
 
           {/* Complete Lesson */}
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-3">
             <Button
               onClick={handleCompleteLesson}
               disabled={isCompleted}
@@ -351,6 +351,17 @@ const LessonPage = () => {
                 </>
               )}
             </Button>
+            
+            {isCompleted && (
+              <Button 
+                onClick={() => navigate('/learn')}
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-adventure"
+              >
+                Continue Learning
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            )}
           </div>
         </div>
       </main>

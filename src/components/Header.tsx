@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, Search, Sun, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import SearchModal from "./SearchModal";
 import treasureLogo from "@/assets/treasure-logo.png";
 
 const Header = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -29,26 +32,51 @@ const Header = () => {
 
         {/* Navigation - Desktop */}
         <nav className="hidden md:flex items-center gap-8">
-          <Button variant="ghost" className="text-foreground hover:text-primary transition-adventure">
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary transition-adventure"
+            onClick={() => navigate('/learn')}
+          >
             Learn
           </Button>
-          <Button variant="ghost" className="text-foreground hover:text-primary transition-adventure">
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary transition-adventure"
+            onClick={() => navigate('/practice')}
+          >
             Practice
           </Button>
-          <Button variant="ghost" className="text-foreground hover:text-primary transition-adventure">
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary transition-adventure"
+            onClick={() => navigate('/build')}
+          >
             Build
           </Button>
-          <Button variant="ghost" className="text-foreground hover:text-primary transition-adventure">
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary transition-adventure"
+            onClick={() => navigate('/community')}
+          >
             Community
           </Button>
-          <Button variant="ghost" className="text-foreground hover:text-primary transition-adventure">
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary transition-adventure"
+            onClick={() => navigate('/pricing')}
+          >
             Pricing
           </Button>
         </nav>
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="hidden sm:flex">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="hidden sm:flex"
+            onClick={() => setSearchOpen(true)}
+          >
             <Search className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="icon" className="hidden sm:flex">
@@ -88,6 +116,7 @@ const Header = () => {
           </Button>
         </div>
       </div>
+      <SearchModal open={searchOpen} onOpenChange={setSearchOpen} />
     </header>
   );
 };

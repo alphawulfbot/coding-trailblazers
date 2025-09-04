@@ -9,6 +9,11 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import CoursePage from "./pages/CoursePage";
 import LessonPage from "./pages/LessonPage";
+import Learn from "./pages/Learn";
+import Practice from "./pages/Practice";
+import Build from "./pages/Build";
+import Community from "./pages/Community";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +29,11 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/learn" element={<Learn />} />
+            <Route path="/practice" element={<Practice />} />
+            <Route path="/build" element={<Build />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/pricing" element={<Pricing />} />
             <Route path="/course/:courseId" element={<CoursePage />} />
             <Route path="/lesson/:lessonId" element={<LessonPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
