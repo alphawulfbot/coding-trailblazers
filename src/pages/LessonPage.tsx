@@ -38,6 +38,7 @@ const LessonPage = () => {
   const [userCode, setUserCode] = useState('');
   const [showSolution, setShowSolution] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [nextLessonId, setNextLessonId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchLessonData = async () => {
@@ -68,6 +69,23 @@ const LessonPage = () => {
 
         if (progressData) {
           setIsCompleted(progressData.is_completed);
+        }
+
+        // Find the next lesson in the course
+        if (lessonData) {
+          const { data: allLessons } = await supabase
+            .from('lessons')
+            .select('id, order_index')
+            .eq('course_id', lessonData.course_id)
+            .order('order_index');
+
+          if (allLessons) {
+            const currentIndex = allLessons.findIndex(l => l.id === lessonId);
+            const nextLesson = allLessons[currentIndex + 1];
+            if (nextLesson) {
+              setNextLessonId(nextLesson.id);
+            }
+          }
         }
 
       } catch (error) {
@@ -354,11 +372,11 @@ const LessonPage = () => {
             
             {isCompleted && (
               <Button 
-                onClick={() => navigate('/learn')}
+                onClick={() => nextLessonId ? navigate(`/lesson/${nextLessonId}`) : navigate(`/course/${lesson.course_id}`)}
                 variant="outline"
                 className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-adventure"
               >
-                Continue Learning
+                {nextLessonId ? 'Next Lesson' : 'Back to Course'}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             )}

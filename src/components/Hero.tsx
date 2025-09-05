@@ -36,7 +36,7 @@ const Hero = () => {
         </div>
 
         <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          The most fun and beginner-friendly way to learn to code. Journey through the fantasy land of programming languages, earn XP to unlock new regions, and collect all the badges at your own pace.
+          Learn coding the fun way—earn XP, unlock worlds, and collect badges at your pace!
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
