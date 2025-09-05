@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, Sun, User, LogOut } from "lucide-react";
+import { Menu, Search, Sun, Moon, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "@/components/theme-provider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import SearchModal from "./SearchModal";
 import treasureLogo from "@/assets/treasure-logo.png";
@@ -10,6 +11,7 @@ import treasureLogo from "@/assets/treasure-logo.png";
 const Header = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -82,8 +84,13 @@ const Header = () => {
           >
             <Search className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="hidden sm:flex">
-            <Sun className="h-4 w-4" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="hidden sm:flex"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
           
           {user ? (

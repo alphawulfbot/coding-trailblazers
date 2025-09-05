@@ -2,9 +2,13 @@ import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Star, Zap, Crown } from "lucide-react";
+import { Check, Star, Zap, Crown, Rocket, Users } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const Pricing = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const plans = [
     {
       name: "Free",
@@ -123,6 +127,13 @@ const Pricing = () => {
                       ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-adventure' 
                       : 'bg-secondary hover:bg-secondary/90 text-secondary-foreground'
                   } transition-adventure`}
+                  onClick={() => {
+                    if (!user) {
+                      navigate('/auth');
+                    } else {
+                      console.log(`Selected plan: ${plan.name}`);
+                    }
+                  }}
                 >
                   {plan.buttonText}
                 </Button>

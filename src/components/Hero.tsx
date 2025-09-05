@@ -15,7 +15,7 @@ const Hero = () => {
           alt="Adventure Landscape"
           className="w-full h-full object-cover pixel-perfect"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-background/30" />
       </div>
 
       {/* Content */}
@@ -35,7 +35,7 @@ const Hero = () => {
           </h1>
         </div>
 
-        <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+        <p className="text-lg md:text-xl text-foreground/90 font-medium mb-8 max-w-2xl mx-auto drop-shadow-md">
           Learn coding the fun way—earn XP, unlock worlds, and collect badges at your pace!
         </p>
 
