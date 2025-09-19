@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Users, Clock, Trophy } from "lucide-react";
+import { Star, Users, Clock, Trophy, Sparkles, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { additionalCourses } from "@/data/additionalCourses";
 
 interface Course {
   id: string;
@@ -33,11 +34,13 @@ const FeaturedCourses = () => {
           .eq('is_featured', true)
           .order('created_at');
 
-        if (data) {
-          setCourses(data);
-        }
+        // Combine database courses with additional courses
+        const allCourses = [...(data || []), ...additionalCourses];
+        setCourses(allCourses);
       } catch (error) {
         console.error('Error fetching courses:', error);
+        // Fallback to additional courses if database fails
+        setCourses(additionalCourses);
       } finally {
         setLoading(false);
       }
@@ -105,7 +108,7 @@ const FeaturedCourses = () => {
           {courses.map((course) => (
             <Card 
               key={course.id} 
-              className="group relative overflow-hidden gradient-card border-0 hover:scale-105 transition-adventure cursor-pointer"
+              className="group relative overflow-hidden gradient-card border-0 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 cursor-pointer transform hover:-translate-y-2"
               onClick={() => handleStartCourse(course.id)}
               role="article"
               aria-label={`Course: ${course.title}`}
@@ -113,12 +116,16 @@ const FeaturedCourses = () => {
               {/* Gradient Overlay */}
               <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${course.gradient}`} />
               
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-4 relative">
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Sparkles className="h-5 w-5 text-primary animate-pulse" />
+                </div>
                 <div className="flex items-start justify-between mb-4">
-                  <div className="text-5xl group-hover:animate-bounce-subtle">
+                  <div className="text-5xl group-hover:animate-bounce-subtle group-hover:scale-110 transition-transform duration-300">
                     {course.emoji}
                   </div>
-                  <Badge className={getDifficultyColor(course.difficulty)}>
+                  <Badge className={`${getDifficultyColor(course.difficulty)} animate-pulse`}>
+                    <Zap className="h-3 w-3 mr-1" />
                     {course.difficulty}
                   </Badge>
                 </div>
@@ -159,21 +166,25 @@ const FeaturedCourses = () => {
                   </div>
                   <Button 
                     size="sm" 
-                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 group/button relative overflow-hidden"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleStartCourse(course.id);
                     }}
                     aria-label={`Start ${course.title} course`}
                   >
-                    Start Quest
+                    <span className="relative z-10 flex items-center gap-1">
+                      <Zap className="h-3 w-3 group-hover/button:animate-bounce" />
+                      Start Quest
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary-foreground/0 via-primary-foreground/20 to-primary-foreground/0 translate-x-[-100%] group-hover/button:translate-x-[100%] transition-transform duration-700" />
                   </Button>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-muted rounded-full h-2">
+                <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                   <div 
-                    className={`h-2 rounded-full bg-gradient-to-r ${course.gradient} opacity-70`}
+                    className={`h-2 rounded-full bg-gradient-to-r ${course.gradient} opacity-70 group-hover:opacity-100 transition-all duration-500 animate-pulse`}
                     style={{ width: `${Math.random() * 40 + 10}%` }}
                   />
                 </div>
