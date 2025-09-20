@@ -3,7 +3,7 @@ import Hero from "@/components/Hero";
 import CourseCategories from "@/components/CourseCategories";
 import FeaturedCourses from "@/components/FeaturedCourses";
 import StatsBanner from "@/components/StatsBanner";
-import Footer from "@/components/Footer";
+import Footer from "@/components/Footer.tsx";
 
 const Index = () => {
   return (

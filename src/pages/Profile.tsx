@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import Footer from '@/components/Footer.tsx';
 import { User, Upload, Camera, Trophy, Zap, Calendar, Target } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 
