@@ -13,6 +13,7 @@ import Tutorials from "./pages/Tutorials";
 import CoursePage from "./pages/CoursePage";
 import LessonPage from "./pages/LessonPage";
 import Learn from "./pages/Learn";
+import Courses from "./pages/Courses";
 import Practice from "./pages/Practice";
 import Build from "./pages/Build";
 import Community from "./pages/Community";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/tutorials" element={<Tutorials />} />
             <Route path="/learn" element={<Learn />} />
+            <Route path="/courses" element={<Courses />} />
             <Route path="/practice" element={<Practice />} />
             <Route path="/build" element={<Build />} />
             <Route path="/community" element={<Community />} />

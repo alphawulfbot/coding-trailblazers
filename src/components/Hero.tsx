@@ -51,15 +51,11 @@ const Hero = () => {
           <Button 
             variant="outline" 
             size="lg"
-            onClick={() => {
-              document.querySelector('#featured-courses')?.scrollIntoView({ 
-                behavior: 'smooth' 
-              });
-            }}
+            onClick={() => navigate('/courses')}
             className="border-primary/30 text-primary hover:bg-primary/10 px-8 py-6 text-lg"
-            aria-label="View demo courses"
+            aria-label="View all available courses"
           >
-            🎮 View Courses
+            🎮 View Adventures
           </Button>
         </div>
 

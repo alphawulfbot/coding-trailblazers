@@ -197,7 +197,7 @@ const FeaturedCourses = () => {
           <Button 
             size="lg" 
             variant="outline"
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/courses')}
             className="border-primary/30 text-primary hover:bg-primary/10 px-8 py-6"
             aria-label="Explore all available courses"
           >
