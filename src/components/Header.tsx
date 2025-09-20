@@ -47,6 +47,13 @@ const Header = () => {
           <Button 
             variant="ghost" 
             className="text-foreground hover:text-primary transition-adventure"
+            onClick={() => navigate('/tutorials')}
+          >
+            Tutorials
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="text-foreground hover:text-primary transition-adventure"
             onClick={() => navigate('/practice')}
           >
             Practice
@@ -64,13 +71,6 @@ const Header = () => {
             onClick={() => navigate('/community')}
           >
             Community
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="text-foreground hover:text-primary transition-adventure"
-            onClick={() => navigate('/pricing')}
-          >
-            Pricing
           </Button>
         </nav>
 
@@ -103,6 +103,10 @@ const Header = () => {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                   Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>

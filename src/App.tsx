@@ -8,6 +8,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import Tutorials from "./pages/Tutorials";
 import CoursePage from "./pages/CoursePage";
 import LessonPage from "./pages/LessonPage";
 import Learn from "./pages/Learn";
@@ -31,6 +33,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/tutorials" element={<Tutorials />} />
             <Route path="/learn" element={<Learn />} />
             <Route path="/practice" element={<Practice />} />
             <Route path="/build" element={<Build />} />
