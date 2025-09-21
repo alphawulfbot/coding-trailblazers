@@ -100,6 +100,7 @@ const Build = () => {
         .from('tutorials')
         .select('*')
         .eq('is_published', true)
+        .contains('tags', ['type:project'])
         .order('order_index')
         .limit(6);
 

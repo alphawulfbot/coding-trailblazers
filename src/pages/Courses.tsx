@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Clock, Users, Trophy, Star, Search, Filter, Sparkles, Zap, Crown } from "lucide-react";
-import { additionalCourses } from "@/data/additionalCourses";
+
 
 interface Course {
   id: string;
@@ -45,17 +45,16 @@ const Courses = () => {
 
   const fetchCourses = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('courses')
         .select('*')
         .order('created_at');
 
-      // Combine database courses with additional courses
-      const allCourses = [...(data || []), ...additionalCourses];
-      setCourses(allCourses);
+      if (error) throw error;
+      setCourses(data || []);
     } catch (error) {
       console.error('Error fetching courses:', error);
-      setCourses(additionalCourses);
+      setCourses([]);
     } finally {
       setLoading(false);
     }

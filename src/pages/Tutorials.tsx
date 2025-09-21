@@ -79,22 +79,16 @@ const Tutorials = () => {
         .from('tutorials')
         .select('*')
         .eq('is_published', true)
+        .contains('tags', ['type:language'])
         .order('order_index');
 
       if (error) throw error;
-
-      // If no tutorials exist, create sample data
-      if (!data || data.length === 0) {
-        await createSampleTutorials();
-        return;
-      }
-
-      setTutorials(data);
+      setTutorials(data || []);
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to load tutorials",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Failed to load tutorials',
+        variant: 'destructive'
       });
     } finally {
       setIsLoading(false);
