@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,8 +15,17 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
-  const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
+  const { signIn, signUp, signInWithGoogle, resetPassword, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
+
+  // Redirect if user is already authenticated
+  useEffect(() => {
+    if (user) {
+      navigate(redirectTo);
+    }
+  }, [user, navigate, redirectTo]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -35,7 +44,7 @@ const Auth = () => {
     const { error } = await signIn(email, password);
     
     if (!error) {
-      navigate('/');
+      navigate(redirectTo);
     }
     
     setIsLoading(false);

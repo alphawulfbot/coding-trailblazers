@@ -42,7 +42,7 @@ const Hero = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
           <Button 
             size="lg" 
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/auth?redirect=/learn')}
             className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-adventure animate-glow px-8 py-6 text-lg font-semibold"
             aria-label="Start your coding adventure - Sign up or log in"
           >
