@@ -299,14 +299,37 @@ for (let i = 1; i <= 15; i++) {
     ];
 
     try {
-      for (const tutorial of sampleTutorials) {
-        await supabase.from('tutorials').insert(tutorial);
-      }
+      const { data: insertedTutorials, error } = await supabase
+        .from('tutorials')
+        .insert(sampleTutorials)
+        .select();
       
-      // Fetch the newly created tutorials
-      await fetchTutorials();
+      if (error) {
+        console.error('Error inserting tutorials:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create sample tutorials",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (insertedTutorials && insertedTutorials.length > 0) {
+        setTutorials(insertedTutorials);
+        toast({
+          title: "Success!",
+          description: "Sample tutorials created successfully"
+        });
+      }
     } catch (error: any) {
       console.error('Error creating sample tutorials:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create sample tutorials",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
