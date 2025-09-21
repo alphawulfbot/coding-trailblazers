@@ -23,6 +23,10 @@ interface ProfileData {
   level: number;
   streak_days: number;
   last_activity_at: string;
+  privacy_settings: {
+    profile_visible: boolean;
+    show_stats: boolean;
+  };
 }
 
 const Profile = () => {
@@ -41,7 +45,11 @@ const Profile = () => {
       xp: 0,
       level: 1,
       streak_days: 0,
-      last_activity_at: ''
+      last_activity_at: '',
+      privacy_settings: {
+        profile_visible: true,
+        show_stats: false
+      }
     }
   });
 
@@ -64,8 +72,17 @@ const Profile = () => {
       if (error) throw error;
       
       if (data) {
-        setProfile(data);
-        form.reset(data);
+        // Safely handle privacy_settings JSON data
+        const privacySettings = data.privacy_settings as any;
+        const profileData = {
+          ...data,
+          privacy_settings: {
+            profile_visible: privacySettings?.profile_visible ?? true,
+            show_stats: privacySettings?.show_stats ?? false
+          }
+        };
+        setProfile(profileData);
+        form.reset(profileData);
       }
     } catch (error: any) {
       toast({
@@ -158,7 +175,8 @@ const Profile = () => {
         .update({
           username: data.username,
           display_name: data.display_name,
-          bio: data.bio
+          bio: data.bio,
+          privacy_settings: data.privacy_settings
         })
         .eq('user_id', user.id);
 
@@ -354,6 +372,58 @@ const Profile = () => {
                       </FormItem>
                     )}
                   />
+
+                  {/* Privacy Settings */}
+                  <div className="space-y-4 border-t pt-6">
+                    <h3 className="text-lg font-heading text-primary">Privacy Settings</h3>
+                    <p className="text-sm text-muted-foreground">Control who can see your profile information</p>
+                    
+                    <FormField
+                      control={form.control}
+                      name="privacy_settings.profile_visible"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">Profile Visibility</FormLabel>
+                            <div className="text-sm text-muted-foreground">
+                              Allow others to view your basic profile information
+                            </div>
+                          </div>
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="h-4 w-4 rounded border-border"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="privacy_settings.show_stats"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">Show Statistics</FormLabel>
+                            <div className="text-sm text-muted-foreground">
+                              Allow others to see your XP, level, and streak data
+                            </div>
+                          </div>
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="h-4 w-4 rounded border-border"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   
                   <Button 
                     type="submit" 

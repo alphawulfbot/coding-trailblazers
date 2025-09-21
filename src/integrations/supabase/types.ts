@@ -163,6 +163,7 @@ export type Database = {
           id: string
           last_activity_at: string | null
           level: number | null
+          privacy_settings: Json | null
           streak_days: number | null
           updated_at: string
           user_id: string
@@ -177,6 +178,7 @@ export type Database = {
           id?: string
           last_activity_at?: string | null
           level?: number | null
+          privacy_settings?: Json | null
           streak_days?: number | null
           updated_at?: string
           user_id: string
@@ -191,6 +193,7 @@ export type Database = {
           id?: string
           last_activity_at?: string | null
           level?: number | null
+          privacy_settings?: Json | null
           streak_days?: number | null
           updated_at?: string
           user_id?: string
@@ -389,7 +392,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_view_profile_stats: {
+        Args: { profile_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
