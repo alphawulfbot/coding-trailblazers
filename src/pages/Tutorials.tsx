@@ -48,7 +48,8 @@ const categoryIcons: Record<string, any> = {
   'Programming Basics': BookOpen,
   'Design': Palette,
   'Database': Database,
-  'Problem Solving': Lightbulb
+  'Problem Solving': Lightbulb,
+  'Languages': BookOpen
 };
 
 const difficultyColors: Record<string, string> = {
@@ -89,238 +90,6 @@ const Tutorials = () => {
         title: 'Error',
         description: 'Failed to load tutorials',
         variant: 'destructive'
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const createSampleTutorials = async () => {
-    const sampleTutorials = [
-      {
-        title: "HTML Basics: Your First Webpage",
-        description: "Learn the fundamentals of HTML by building your first webpage from scratch.",
-        content: {
-          sections: [
-            {
-              type: "theory",
-              title: "What is HTML?",
-              content: "HTML (HyperText Markup Language) is the standard markup language for creating web pages."
-            },
-            {
-              type: "practice",
-              title: "Create a Basic HTML Structure",
-              code: `<!DOCTYPE html>
-<html>
-<head>
-    <title>My First Page</title>
-</head>
-<body>
-    <h1>Hello, World!</h1>
-    <p>This is my first webpage.</p>
-</body>
-</html>`,
-              task: "Copy this code and save it as 'index.html'"
-            },
-            {
-              type: "quiz",
-              question: "What does HTML stand for?",
-              options: ["HyperText Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language"],
-              correct: 0
-            }
-          ]
-        },
-        difficulty: "Beginner",
-        category: "Web Development",
-        tags: ["HTML", "basics", "beginner"],
-        duration_minutes: 20,
-        xp_reward: 25,
-        order_index: 1
-      },
-      {
-        title: "CSS Styling: Make It Beautiful",
-        description: "Add colors, fonts, and layouts to your HTML using CSS.",
-        content: {
-          sections: [
-            {
-              type: "theory",
-              title: "Introduction to CSS",
-              content: "CSS (Cascading Style Sheets) is used to style and layout web pages."
-            },
-            {
-              type: "practice",
-              title: "Add Some Style",
-              code: `body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-h1 {
-    color: #2c3e50;
-    text-align: center;
-}`,
-              task: "Add this CSS to style your HTML page"
-            }
-          ]
-        },
-        difficulty: "Beginner",
-        category: "Web Development", 
-        tags: ["CSS", "styling", "design"],
-        duration_minutes: 25,
-        xp_reward: 30,
-        order_index: 2
-      },
-      {
-        title: "JavaScript Variables & Functions",
-        description: "Learn to store data and create reusable code with JavaScript variables and functions.",
-        content: {
-          sections: [
-            {
-              type: "theory",
-              title: "Variables in JavaScript",
-              content: "Variables are containers for storing data values. In JavaScript, you can create variables using let, const, or var."
-            },
-            {
-              type: "practice",
-              title: "Create Your First Variables",
-              code: `let playerName = "CodeHunter";
-const maxLevel = 100;
-let currentXP = 0;
-
-function gainXP(points) {
-    currentXP += points;
-    console.log(\`\${playerName} gained \${points} XP!\`);
-}
-
-gainXP(25);`,
-              task: "Try running this code in your browser console"
-            }
-          ]
-        },
-        difficulty: "Beginner",
-        category: "Programming Basics",
-        tags: ["JavaScript", "variables", "functions"],
-        duration_minutes: 30,
-        xp_reward: 35,
-        order_index: 3
-      },
-      {
-        title: "Responsive Design Fundamentals",
-        description: "Make your websites look great on all devices with responsive design techniques.",
-        content: {
-          sections: [
-            {
-              type: "theory",
-              title: "What is Responsive Design?",
-              content: "Responsive design ensures your website works well on all screen sizes and devices."
-            },
-            {
-              type: "practice",
-              title: "Mobile-First CSS",
-              code: `/* Mobile styles first */
-.container {
-    padding: 1rem;
-    width: 100%;
-}
-
-/* Tablet styles */
-@media (min-width: 768px) {
-    .container {
-        max-width: 750px;
-        margin: 0 auto;
-    }
-}
-
-/* Desktop styles */
-@media (min-width: 1024px) {
-    .container {
-        max-width: 1200px;
-        padding: 2rem;
-    }
-}`,
-              task: "Apply these responsive styles to your webpage"
-            }
-          ]
-        },
-        difficulty: "Intermediate",
-        category: "Web Development",
-        tags: ["CSS", "responsive", "mobile"],
-        duration_minutes: 40,
-        xp_reward: 50,
-        order_index: 4
-      },
-      {
-        title: "Problem Solving with Algorithms",
-        description: "Learn to think like a programmer by solving problems step by step.",
-        content: {
-          sections: [
-            {
-              type: "theory",
-              title: "What is an Algorithm?",
-              content: "An algorithm is a step-by-step procedure for solving a problem or completing a task."
-            },
-            {
-              type: "practice",
-              title: "FizzBuzz Challenge",
-              code: `// Print numbers 1-15, but:
-// - If divisible by 3: print "Fizz"
-// - If divisible by 5: print "Buzz"  
-// - If divisible by both: print "FizzBuzz"
-
-for (let i = 1; i <= 15; i++) {
-    if (i % 15 === 0) {
-        console.log("FizzBuzz");
-    } else if (i % 3 === 0) {
-        console.log("Fizz");
-    } else if (i % 5 === 0) {
-        console.log("Buzz");
-    } else {
-        console.log(i);
-    }
-}`,
-              task: "Run this algorithm and understand how it works"
-            }
-          ]
-        },
-        difficulty: "Intermediate",
-        category: "Problem Solving",
-        tags: ["algorithms", "logic", "programming"],
-        duration_minutes: 35,
-        xp_reward: 45,
-        order_index: 5
-      }
-    ];
-
-    try {
-      const { data: insertedTutorials, error } = await supabase
-        .from('tutorials')
-        .insert(sampleTutorials)
-        .select();
-      
-      if (error) {
-        console.error('Error inserting tutorials:', error);
-        toast({
-          title: "Error",
-          description: "Failed to create sample tutorials",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      if (insertedTutorials && insertedTutorials.length > 0) {
-        setTutorials(insertedTutorials);
-        toast({
-          title: "Success!",
-          description: "Sample tutorials created successfully"
-        });
-      }
-    } catch (error: any) {
-      console.error('Error creating sample tutorials:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create sample tutorials",
-        variant: "destructive"
       });
     } finally {
       setIsLoading(false);
@@ -479,10 +248,10 @@ for (let i = 1; i <= 15; i++) {
           {/* Header Section */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-heading text-primary mb-4">
-              Interactive Tutorials
+              Programming Language Tutorials
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Learn by doing with our interactive coding tutorials. Complete challenges, earn XP, and level up your skills!
+              Master programming languages with interactive tutorials. Learn the fundamentals and build your coding foundation!
             </p>
             
             {user && (
@@ -502,193 +271,103 @@ for (let i = 1; i <= 15; i++) {
 
           {/* Category Filter */}
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-            <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 w-full">
-              {categories.map((category) => (
-                <TabsTrigger key={category} value={category} className="text-xs">
-                  {category}
-                </TabsTrigger>
-              ))}
+            <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
+              <TabsTrigger value="All">All Tutorials</TabsTrigger>
+              <TabsTrigger value="Languages">Languages</TabsTrigger>
             </TabsList>
-
-            {/* Tutorials Grid */}
-            <TabsContent value={selectedCategory} className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredTutorials.map((tutorial) => {
-                  const IconComponent = categoryIcons[tutorial.category] || BookOpen;
-                  const isCompleted = progress[tutorial.id]?.is_completed;
-                  const isExpanded = expandedTutorial === tutorial.id;
-
-                  return (
-                    <Card 
-                      key={tutorial.id} 
-                      className={`transition-adventure hover:shadow-adventure border-border/50 ${
-                        isCompleted ? 'bg-secondary/5 border-secondary/20' : ''
-                      } ${isExpanded ? 'col-span-full' : ''}`}
-                    >
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <IconComponent className="h-8 w-8 text-primary mb-2" />
-                          {isCompleted && (
-                            <CheckCircle className="h-6 w-6 text-secondary" />
-                          )}
-                        </div>
-                        
-                        <CardTitle className="text-lg font-heading leading-tight">
-                          {tutorial.title}
-                        </CardTitle>
-                        
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Badge className={difficultyColors[tutorial.difficulty] || 'bg-muted'}>
-                            {tutorial.difficulty}
-                          </Badge>
-                          
-                          <div className="flex items-center text-sm text-muted-foreground">
-                            <Clock className="h-4 w-4 mr-1" />
-                            {tutorial.duration_minutes}m
-                          </div>
-                          
-                          <div className="flex items-center text-sm text-secondary">
-                            <Zap className="h-4 w-4 mr-1" />
-                            {tutorial.xp_reward} XP
-                          </div>
-                        </div>
-                      </CardHeader>
-                      
-                      <CardContent className="space-y-4">
-                        <p className="text-muted-foreground text-sm leading-relaxed">
-                          {tutorial.description}
-                        </p>
-                        
-                        <div className="flex flex-wrap gap-1">
-                          {tutorial.tags.map((tag, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        {/* Tutorial Content (when expanded) */}
-                        {isExpanded && tutorial.content?.sections && (
-                          <div className="mt-6 space-y-6 border-t border-border pt-6">
-                            {tutorial.content.sections.map((section: any, index: number) => (
-                              <div key={index} className="space-y-3">
-                                <h4 className="font-heading text-primary">{section.title}</h4>
-                                
-                                {section.type === 'theory' && (
-                                  <div className="bg-muted/50 rounded-lg p-4">
-                                    <p className="text-sm leading-relaxed">{section.content}</p>
-                                  </div>
-                                )}
-                                
-                                {section.type === 'practice' && (
-                                  <div className="space-y-3">
-                                    <div className="bg-card border rounded-lg p-4">
-                                      <pre className="text-xs overflow-x-auto">
-                                        <code>{section.code}</code>
-                                      </pre>
-                                    </div>
-                                    <p className="text-sm text-accent font-medium">
-                                      <Target className="h-4 w-4 inline mr-1" />
-                                      {section.task}
-                                    </p>
-                                  </div>
-                                )}
-                                
-                                {section.type === 'quiz' && (
-                                  <div className="space-y-3">
-                                    <p className="font-medium">{section.question}</p>
-                                    <div className="space-y-2">
-                                      {section.options.map((option: string, optIndex: number) => (
-                                        <Button
-                                          key={optIndex}
-                                          variant="outline"
-                                          size="sm"
-                                          className="w-full text-left justify-start"
-                                          onClick={() => {
-                                            if (optIndex === section.correct) {
-                                              toast({
-                                                title: "Correct! 🎉",
-                                                description: "Great job!"
-                                              });
-                                            } else {
-                                              toast({
-                                                title: "Try again",
-                                                description: "That's not quite right",
-                                                variant: "destructive"
-                                              });
-                                            }
-                                          }}
-                                        >
-                                          {option}
-                                        </Button>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                            
-                            <div className="flex gap-3 pt-4 border-t border-border">
-                              <Button
-                                onClick={() => setExpandedTutorial(null)}
-                                variant="outline"
-                              >
-                                Minimize
-                              </Button>
-                              
-                              {!isCompleted && (
-                                <Button
-                                  onClick={() => completeTutorial(tutorial.id, tutorial.xp_reward)}
-                                  className="bg-secondary hover:bg-secondary/90"
-                                >
-                                  <Trophy className="h-4 w-4 mr-2" />
-                                  Mark Complete
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Action Button */}
-                        {!isExpanded && (
-                          <Button 
-                            onClick={() => startTutorial(tutorial.id)}
-                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-adventure"
-                            disabled={!user}
-                          >
-                            <Play className="h-4 w-4 mr-2" />
-                            {isCompleted ? 'Review' : 'Start Tutorial'}
-                          </Button>
-                        )}
-                        
-                        {!user && (
-                          <p className="text-xs text-muted-foreground text-center">
-                            Sign in to track your progress
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            </TabsContent>
           </Tabs>
 
-          {filteredTutorials.length === 0 && (
-            <Card className="text-center py-12">
-              <CardContent>
-                <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-heading text-foreground mb-2">No tutorials found</h3>
-                <p className="text-muted-foreground">
-                  Try selecting a different category or check back later for new content.
-                </p>
-              </CardContent>
-            </Card>
-          )}
+          {/* Tutorials Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTutorials.map((tutorial) => {
+              const isCompleted = progress[tutorial.id]?.is_completed;
+              const isExpanded = expandedTutorial === tutorial.id;
+              const CategoryIcon = categoryIcons[tutorial.category] || BookOpen;
+              
+              return (
+                <Card 
+                  key={tutorial.id} 
+                  className="group relative overflow-hidden border shadow-card hover:shadow-adventure transition-adventure"
+                >
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <CategoryIcon className="h-5 w-5 text-primary" />
+                        <Badge variant="outline">{tutorial.category}</Badge>
+                      </div>
+                      {isCompleted && (
+                        <CheckCircle className="h-5 w-5 text-green-500" />
+                      )}
+                    </div>
+                    
+                    <CardTitle className="text-lg">{tutorial.title}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{tutorial.description}</p>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {tutorial.duration_minutes} min
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4" />
+                        {tutorial.xp_reward} XP
+                      </div>
+                    </div>
 
+                    <Badge className={difficultyColors[tutorial.difficulty]}>
+                      <Zap className="h-3 w-3 mr-1" />
+                      {tutorial.difficulty}
+                    </Badge>
+
+                    <div className="space-y-2">
+                      <Button 
+                        onClick={() => startTutorial(tutorial.id)}
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-adventure transition-adventure"
+                        disabled={isCompleted}
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        {isCompleted ? 'Completed' : 'Start Tutorial'}
+                      </Button>
+                      
+                      {!isCompleted && isExpanded && (
+                        <Button 
+                          onClick={() => completeTutorial(tutorial.id, tutorial.xp_reward)}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          <Trophy className="h-4 w-4 mr-2" />
+                          Complete Tutorial
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Empty State */}
+          {filteredTutorials.length === 0 && (
+            <div className="text-center py-12">
+              <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">No tutorials available</h3>
+              <p className="text-muted-foreground mb-4">
+                {selectedCategory === 'All' ? 'Check back soon for new tutorials!' : `No ${selectedCategory.toLowerCase()} tutorials available.`}
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => setSelectedCategory('All')}
+                className="border-primary/30 text-primary hover:bg-primary/10"
+              >
+                View All Tutorials
+              </Button>
+            </div>
+          )}
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
