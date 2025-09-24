@@ -87,31 +87,111 @@ const Build = () => {
     }
   ];
 
-  const [tutorials, setTutorials] = useState([]);
-  const [loadingTutorials, setLoadingTutorials] = useState(true);
-
-  useEffect(() => {
-    fetchTutorials();
-  }, []);
-
-  const fetchTutorials = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('tutorials')
-        .select('*')
-        .eq('is_published', true)
-        .contains('tags', ['type:project'])
-        .order('order_index')
-        .limit(6);
-
-      if (error) throw error;
-      setTutorials(data || []);
-    } catch (error) {
-      console.error('Error fetching tutorials:', error);
-    } finally {
-      setLoadingTutorials(false);
+  // Project building tutorials - completely separate from main tutorials page
+  const buildTutorials = [
+    {
+      id: 'build-1',
+      title: 'Todo App with Authentication',
+      description: 'Build a full-stack todo app with user authentication',
+      category: 'Full Stack',
+      difficulty: 'Beginner',
+      duration_minutes: 45,
+      xp_reward: 80,
+      tags: ['react', 'supabase', 'authentication'],
+      steps: [
+        'Set up React project with Vite',
+        'Configure Supabase authentication',
+        'Create todo CRUD operations',
+        'Style with Tailwind CSS',
+        'Deploy to production'
+      ]
+    },
+    {
+      id: 'build-2', 
+      title: 'Real-time Chat Application',
+      description: 'Create a chat app with real-time messaging',
+      category: 'Real-time',
+      difficulty: 'Intermediate',
+      duration_minutes: 60,
+      xp_reward: 120,
+      tags: ['react', 'websockets', 'realtime'],
+      steps: [
+        'Design chat interface',
+        'Set up WebSocket connections',
+        'Implement message broadcasting',
+        'Add user presence indicators',
+        'Create chat rooms'
+      ]
+    },
+    {
+      id: 'build-3',
+      title: 'Portfolio Website Generator',
+      description: 'Build a tool that generates portfolio websites',
+      category: 'Tools',
+      difficulty: 'Intermediate', 
+      duration_minutes: 50,
+      xp_reward: 100,
+      tags: ['react', 'templates', 'generator'],
+      steps: [
+        'Create template system',
+        'Build form for user data',
+        'Generate dynamic layouts',
+        'Export functionality',
+        'Preview and customization'
+      ]
+    },
+    {
+      id: 'build-4',
+      title: 'E-commerce Dashboard',
+      description: 'Create an admin dashboard for online stores',
+      category: 'Business',
+      difficulty: 'Advanced',
+      duration_minutes: 90,
+      xp_reward: 150,
+      tags: ['react', 'charts', 'dashboard'],
+      steps: [
+        'Design dashboard layout',
+        'Integrate analytics charts',
+        'Build product management',
+        'Add order tracking',
+        'Implement user roles'
+      ]
+    },
+    {
+      id: 'build-5',
+      title: 'Weather App with Maps',
+      description: 'Build a weather app with interactive maps',
+      category: 'APIs',
+      difficulty: 'Beginner',
+      duration_minutes: 35,
+      xp_reward: 70,
+      tags: ['apis', 'maps', 'weather'],
+      steps: [
+        'Set up weather API',
+        'Integrate map component',
+        'Display weather data',
+        'Add location search',
+        'Implement forecasts'
+      ]
+    },
+    {
+      id: 'build-6',
+      title: 'Social Media Dashboard',
+      description: 'Create a dashboard to manage multiple social accounts',
+      category: 'Social',
+      difficulty: 'Advanced',
+      duration_minutes: 75,
+      xp_reward: 140,
+      tags: ['apis', 'social', 'automation'],
+      steps: [
+        'Connect social APIs',
+        'Build unified interface',
+        'Schedule posts',
+        'Analytics integration',
+        'Multi-account management'
+      ]
     }
-  };
+  ];
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
@@ -307,74 +387,95 @@ const Build = () => {
           </TabsContent>
 
           <TabsContent value="tutorials" className="mt-8">
-            {loadingTutorials ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <Card key={i}>
-                    <CardContent className="p-6">
-                      <div className="animate-pulse">
-                        <div className="h-6 bg-muted rounded w-3/4 mb-4"></div>
-                        <div className="h-4 bg-muted rounded w-full mb-2"></div>
-                        <div className="h-4 bg-muted rounded w-2/3"></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-heading text-primary mb-2">Project Building Tutorials</h2>
+                <p className="text-muted-foreground">
+                  Step-by-step guides to build real-world applications from scratch
+                </p>
               </div>
-            ) : (
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {tutorials.map((tutorial) => {
-                  const categoryIcon = {
-                    'Web Development': <Code className="h-6 w-6" />,
-                    'Programming Basics': <Database className="h-6 w-6" />,
-                    'Problem Solving': <Palette className="h-6 w-6" />
+                {buildTutorials.map((tutorial) => {
+                  const categoryIcons = {
+                    'Full Stack': <Code className="h-6 w-6" />,
+                    'Real-time': <Database className="h-6 w-6" />,
+                    'Tools': <Palette className="h-6 w-6" />,
+                    'Business': <Users className="h-6 w-6" />,
+                    'APIs': <Rocket className="h-6 w-6" />,
+                    'Social': <Github className="h-6 w-6" />
                   };
 
                   return (
                     <Card key={tutorial.id} className="border shadow-card hover:shadow-adventure transition-adventure">
                       <CardHeader>
                         <div className="flex items-center gap-3 mb-2">
-                          {categoryIcon[tutorial.category] || <Code className="h-6 w-6" />}
+                          {categoryIcons[tutorial.category] || <Code className="h-6 w-6" />}
                           <Badge variant="outline">{tutorial.category}</Badge>
                         </div>
                         <CardTitle className="text-lg">{tutorial.title}</CardTitle>
                         <CardDescription>{tutorial.description}</CardDescription>
                       </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-sm text-muted-foreground flex items-center gap-1">
+                      <CardContent className="space-y-4">
+                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
                             <Clock className="h-4 w-4" />
                             {tutorial.duration_minutes} min
-                          </span>
-                          <span className="text-sm text-muted-foreground flex items-center gap-1">
+                          </div>
+                          <div className="flex items-center gap-1">
                             <Star className="h-4 w-4" />
                             {tutorial.xp_reward} XP
-                          </span>
+                          </div>
                         </div>
+
+                        <Badge className={getDifficultyColor(tutorial.difficulty)}>
+                          {tutorial.difficulty}
+                        </Badge>
+
+                        {/* Steps Preview */}
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">What you'll build:</p>
+                          <div className="space-y-1">
+                            {tutorial.steps.slice(0, 3).map((step, index) => (
+                              <div key={index} className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <CheckCircle className="h-3 w-3" />
+                                <span>{step}</span>
+                              </div>
+                            ))}
+                            {tutorial.steps.length > 3 && (
+                              <div className="text-xs text-muted-foreground pl-5">
+                                +{tutorial.steps.length - 3} more steps...
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Tags */}
+                        <div className="flex flex-wrap gap-1">
+                          {tutorial.tags.map((tag) => (
+                            <Badge key={tag} variant="outline" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+
                         <Button 
-                          className="w-full"
-                          onClick={() => navigate('/tutorials')}
+                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                          onClick={() => {
+                            // For now, show a toast indicating this is a demo 
+                            // In a real app, this would start the tutorial
+                            alert(`Starting "${tutorial.title}" tutorial - This is a demo!`);
+                          }}
                         >
-                          <Play className="h-4 w-4 mr-2" />
-                          Start Tutorial
+                          <Hammer className="h-4 w-4 mr-2" />
+                          Start Building
                         </Button>
                       </CardContent>
                     </Card>
                   );
                 })}
-                
-                {tutorials.length === 0 && (
-                  <div className="col-span-full text-center py-12">
-                    <Code className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">No tutorials available</h3>
-                    <p className="text-muted-foreground mb-4">Check back soon for new learning content!</p>
-                    <Button onClick={() => navigate('/tutorials')}>
-                      Browse All Tutorials
-                    </Button>
-                  </div>
-                )}
               </div>
-            )}
+            </div>
           </TabsContent>
 
           <TabsContent value="portfolio" className="mt-8">
