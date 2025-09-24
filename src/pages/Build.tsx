@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import { 
   Hammer, 
   Rocket, 
@@ -26,15 +27,18 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { usePortfolio, PortfolioProject } from "@/hooks/usePortfolio";
+import { useProjectChallenges, ProjectChallenge } from "@/hooks/useProjectChallenges";
 import { PortfolioProjectCard } from "@/components/portfolio/PortfolioProjectCard";
 import { ProjectForm } from "@/components/portfolio/ProjectForm";
+import { ProjectChallengeCard } from "@/components/challenges/ProjectChallengeCard";
+import { ChallengeDetailView } from "@/components/challenges/ChallengeDetailView";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Build = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { projects, stats, loading, createProject } = usePortfolio();
-  const [activeProject, setActiveProject] = useState<number | null>(null);
+  const { challenges, loading: challengesLoading, activeChallenge, setActiveChallenge } = useProjectChallenges();
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState<PortfolioProject | undefined>();
   const [publicProjects, setPublicProjects] = useState<PortfolioProject[]>([]);
@@ -195,6 +199,14 @@ const Build = () => {
     setEditingProject(undefined);
   };
 
+  const handleStartChallenge = (challenge: ProjectChallenge) => {
+    setActiveChallenge(challenge);
+  };
+
+  const handleBackFromChallenge = () => {
+    setActiveChallenge(null);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -214,17 +226,97 @@ const Build = () => {
           </TabsList>
           
           <TabsContent value="projects" className="mt-8">
-            <div className="text-center py-16">
-              <Rocket className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
-              <h3 className="text-2xl font-semibold mb-4">Project Builder Coming Soon</h3>
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                Interactive project builder with step-by-step guidance is currently in development.
-              </p>
-              <Button onClick={() => handleCreateProject()} size="lg">
-                <Plus className="h-4 w-4 mr-2" />
-                Add to Portfolio Instead
-              </Button>
-            </div>
+            {activeChallenge ? (
+              <ChallengeDetailView 
+                challenge={activeChallenge} 
+                onBack={handleBackFromChallenge} 
+              />
+            ) : challengesLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <Card key={i} className="border shadow-card">
+                    <CardHeader>
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-full" />
+                    </CardHeader>
+                    <CardContent>
+                      <Skeleton className="h-20 w-full" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-heading text-primary mb-2">Project Challenges</h2>
+                  <p className="text-muted-foreground">
+                    Complete hands-on coding challenges to build real projects and earn XP
+                  </p>
+                </div>
+
+                {challenges.length === 0 ? (
+                  <Card className="border-dashed">
+                    <CardContent className="flex flex-col items-center justify-center p-12 text-center">
+                      <Rocket className="h-16 w-16 text-muted-foreground mb-4" />
+                      <h4 className="text-lg font-semibold mb-2">No challenges available</h4>
+                      <p className="text-muted-foreground mb-4">
+                        Project challenges are being prepared. Check back soon!
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {challenges.map((challenge) => (
+                      <ProjectChallengeCard
+                        key={challenge.id}
+                        challenge={challenge}
+                        onStartChallenge={handleStartChallenge}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Quick Stats */}
+                {user && challenges.length > 0 && (
+                  <Card className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
+                    <CardContent className="p-6">
+                      <div className="text-center">
+                        <h3 className="text-lg font-semibold mb-4">Your Challenge Progress</h3>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <div className="text-2xl font-bold text-primary">
+                              {challenges.filter(c => {
+                                const progress = challenges.find(ch => ch.id === c.id);
+                                return progress; // This would be from useProjectChallenges hook
+                              }).length}
+                            </div>
+                            <div className="text-sm text-muted-foreground">Started</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-bold text-green-600">
+                              {challenges.filter(c => {
+                                // This would check completion from useProjectChallenges hook
+                                return false; // Placeholder
+                              }).length}
+                            </div>
+                            <div className="text-sm text-muted-foreground">Completed</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-bold text-yellow-600">
+                              {challenges.reduce((total, challenge) => {
+                                // This would check if completed and add XP
+                                return total; // Placeholder  
+                              }, 0)}
+                            </div>
+                            <div className="text-sm text-muted-foreground">XP Earned</div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="tutorials" className="mt-8">

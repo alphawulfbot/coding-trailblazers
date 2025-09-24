@@ -328,6 +328,60 @@ export type Database = {
         }
         Relationships: []
       }
+      project_challenges: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          difficulty: string | null
+          duration_hours: number | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          order_index: number | null
+          resources: Json | null
+          steps: Json
+          tech_stack: string[] | null
+          title: string
+          updated_at: string
+          xp_reward: number | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          difficulty?: string | null
+          duration_hours?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          order_index?: number | null
+          resources?: Json | null
+          steps?: Json
+          tech_stack?: string[] | null
+          title: string
+          updated_at?: string
+          xp_reward?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          difficulty?: string | null
+          duration_hours?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          order_index?: number | null
+          resources?: Json | null
+          steps?: Json
+          tech_stack?: string[] | null
+          title?: string
+          updated_at?: string
+          xp_reward?: number | null
+        }
+        Relationships: []
+      }
       project_likes: {
         Row: {
           id: string
@@ -503,6 +557,59 @@ export type Database = {
             columns: ["achievement_id"]
             isOneToOne: false
             referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_challenge_progress: {
+        Row: {
+          challenge_id: string
+          completed_at: string | null
+          completed_steps: number[] | null
+          created_at: string
+          current_step: number | null
+          id: string
+          is_completed: boolean | null
+          notes: string | null
+          progress_data: Json | null
+          started_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string | null
+          completed_steps?: number[] | null
+          created_at?: string
+          current_step?: number | null
+          id?: string
+          is_completed?: boolean | null
+          notes?: string | null
+          progress_data?: Json | null
+          started_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string | null
+          completed_steps?: number[] | null
+          created_at?: string
+          current_step?: number | null
+          id?: string
+          is_completed?: boolean | null
+          notes?: string | null
+          progress_data?: Json | null
+          started_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenge_progress_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "project_challenges"
             referencedColumns: ["id"]
           },
         ]
