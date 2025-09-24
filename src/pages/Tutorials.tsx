@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer.tsx';
 import { 
@@ -20,347 +21,115 @@ import {
   Lightbulb,
   Target,
   Trophy,
-  Star
+  Star,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 interface LanguageTutorial {
   id: string;
   title: string;
   description: string;
-  language: string;
+  category: string;
   difficulty: string;
   duration_minutes: number;
   xp_reward: number;
-  sections: {
-    type: string;
-    title: string;
-    content: string;
-    code?: string;
-    exercise?: string;
-  }[];
+  tags: string[];
+  content: {
+    sections: TutorialSection[];
+  };
   isCompleted?: boolean;
+  progress?: number;
 }
 
-const languageTutorials: LanguageTutorial[] = [
-  {
-    id: 'js-variables',
-    title: 'JavaScript Variables & Data Types',
-    description: 'Master JavaScript variables, let, const, and primitive data types',
-    language: 'JavaScript',
-    difficulty: 'Beginner',
-    duration_minutes: 25,
-    xp_reward: 30,
-    sections: [
-      {
-        type: 'theory',
-        title: 'Understanding Variables',
-        content: 'Variables are containers that store data values. In JavaScript, we use let, const, and var to declare variables.'
-      },
-      {
-        type: 'code',
-        title: 'Variable Declaration',
-        content: 'Here\'s how to declare variables in JavaScript:',
-        code: `// Using let for variables that can change
-let playerName = "CodeHunter";
-let score = 0;
-
-// Using const for constants
-const MAX_LEVEL = 100;
-const PI = 3.14159;
-
-// Data types
-let age = 25;           // Number
-let isActive = true;    // Boolean
-let message = "Hello";  // String
-let nothing = null;     // Null
-let notDefined;         // Undefined`
-      },
-      {
-        type: 'exercise',
-        title: 'Practice Exercise',
-        content: 'Try creating variables for a game character:',
-        exercise: 'Create variables for: character name, health points, level, and whether they have a weapon'
-      }
-    ]
-  },
-  {
-    id: 'js-functions',
-    title: 'JavaScript Functions',
-    description: 'Learn to create reusable code with JavaScript functions',
-    language: 'JavaScript',
-    difficulty: 'Beginner',
-    duration_minutes: 30,
-    xp_reward: 35,
-    sections: [
-      {
-        type: 'theory',
-        title: 'What are Functions?',
-        content: 'Functions are reusable blocks of code that perform specific tasks. They help organize code and avoid repetition.'
-      },
-      {
-        type: 'code',
-        title: 'Function Syntax',
-        content: 'Different ways to create functions:',
-        code: `// Function declaration
-function greetPlayer(name) {
-    return "Welcome, " + name + "!";
+interface TutorialSection {
+  type: 'theory' | 'code' | 'exercise';
+  title: string;
+  content: string;
+  code?: string;
+  exercise?: string;
+  solution?: string;
+  duration: number;
 }
 
-// Function expression
-const calculateDamage = function(attack, defense) {
-    return Math.max(0, attack - defense);
-};
-
-// Arrow function (ES6)
-const gainExperience = (currentXP, bonus) => {
-    return currentXP + bonus;
-};
-
-// Using functions
-console.log(greetPlayer("Hero"));
-console.log(calculateDamage(50, 20));
-console.log(gainExperience(100, 25));`
-      },
-      {
-        type: 'exercise', 
-        title: 'Build a Level System',
-        content: 'Create functions for a game level system:',
-        exercise: 'Write functions to: check if player can level up, calculate required XP for next level, and level up the player'
-      }
-    ]
-  },
-  {
-    id: 'python-basics',
-    title: 'Python Syntax & Variables',
-    description: 'Get started with Python syntax, variables, and basic operations',
-    language: 'Python',
-    difficulty: 'Beginner', 
-    duration_minutes: 20,
-    xp_reward: 25,
-    sections: [
-      {
-        type: 'theory',
-        title: 'Python Syntax Rules',
-        content: 'Python uses indentation to define code blocks. No curly braces needed!'
-      },
-      {
-        type: 'code',
-        title: 'Variables and Types',
-        content: 'Python variables are dynamically typed:',
-        code: `# Variables in Python
-player_name = "CodeMaster"
-health = 100
-level = 1
-is_alive = True
-
-# Python is dynamically typed
-score = 0        # Integer
-score = 95.5     # Now it's a float
-score = "A+"     # Now it's a string
-
-# Multiple assignment
-x, y, z = 1, 2, 3
-name = age = "Unknown"
-
-# Print output
-print(f"Player: {player_name}")
-print(f"Health: {health}/100")
-print(f"Level: {level}")`
-      },
-      {
-        type: 'exercise',
-        title: 'Character Stats',
-        content: 'Create a character stat system:',
-        exercise: 'Create variables for character stats and print a character sheet'
-      }
-    ]
-  },
-  {
-    id: 'react-components',
-    title: 'React Components & JSX',
-    description: 'Build your first React components and understand JSX syntax',
-    language: 'React',
-    difficulty: 'Beginner',
-    duration_minutes: 35,
-    xp_reward: 40,
-    sections: [
-      {
-        type: 'theory',
-        title: 'What is JSX?',
-        content: 'JSX is a syntax extension for JavaScript that lets you write HTML-like code in your React components.'
-      },
-      {
-        type: 'code',
-        title: 'Your First Component',
-        content: 'Here\'s how to create React components:',
-        code: `// Function component
-function PlayerCard({ name, level, health }) {
-    return (
-        <div className="player-card">
-            <h2>{name}</h2>
-            <p>Level: {level}</p>
-            <div className="health-bar">
-                Health: {health}/100
-            </div>
-        </div>
-    );
+interface UserProgress {
+  tutorial_id: string;
+  is_completed: boolean;
+  progress_data: {
+    completed_sections: number[];
+    current_section: number;
+  };
 }
-
-// Using the component
-function Game() {
-    return (
-        <div>
-            <h1>My Game</h1>
-            <PlayerCard 
-                name="Hero" 
-                level={5} 
-                health={85} 
-            />
-        </div>
-    );
-}`
-      },
-      {
-        type: 'exercise',
-        title: 'Build a Game UI',
-        content: 'Create React components for a simple game:',
-        exercise: 'Build components for: inventory item, skill tree node, and quest log entry'
-      }
-    ]
-  },
-  {
-    id: 'css-styling',
-    title: 'CSS Styling Fundamentals',
-    description: 'Learn CSS selectors, properties, and how to style web pages',
-    language: 'CSS',
-    difficulty: 'Beginner',
-    duration_minutes: 30,
-    xp_reward: 30,
-    sections: [
-      {
-        type: 'theory',
-        title: 'CSS Basics',
-        content: 'CSS (Cascading Style Sheets) is used to style HTML elements and make web pages look beautiful.'
-      },
-      {
-        type: 'code',
-        title: 'Selectors and Properties',
-        content: 'Basic CSS syntax and selectors:',
-        code: `/* Element selector */
-h1 {
-    color: #2c3e50;
-    font-size: 2rem;
-    text-align: center;
-}
-
-/* Class selector */
-.player-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* ID selector */
-#game-board {
-    width: 800px;
-    height: 600px;
-    margin: 0 auto;
-}
-
-/* Hover effects */
-.button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}`
-      },
-      {
-        type: 'exercise',
-        title: 'Style a Game Interface',
-        content: 'Practice CSS styling:',
-        exercise: 'Create styles for: game buttons, character health bars, and inventory grid'
-      }
-    ]
-  },
-  {
-    id: 'html-structure',
-    title: 'HTML Document Structure',
-    description: 'Learn HTML elements, attributes, and semantic structure',
-    language: 'HTML',
-    difficulty: 'Beginner',
-    duration_minutes: 25,
-    xp_reward: 25,
-    sections: [
-      {
-        type: 'theory',
-        title: 'HTML Basics',
-        content: 'HTML (HyperText Markup Language) provides the structure and content of web pages using elements and tags.'
-      },
-      {
-        type: 'code',
-        title: 'HTML Document Structure',
-        content: 'Basic HTML document structure:',
-        code: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Game</title>
-</head>
-<body>
-    <header>
-        <h1>Epic Quest Game</h1>
-        <nav>
-            <ul>
-                <li><a href="#play">Play</a></li>
-                <li><a href="#stats">Stats</a></li>
-                <li><a href="#inventory">Inventory</a></li>
-            </ul>
-        </nav>
-    </header>
-    
-    <main>
-        <section id="game-area">
-            <h2>Game Board</h2>
-            <div class="player-info">
-                <span>Health: 100</span>
-                <span>Level: 5</span>
-            </div>
-        </section>
-    </main>
-    
-    <footer>
-        <p>&copy; 2024 My Game</p>
-    </footer>
-</body>
-</html>`
-      },
-      {
-        type: 'exercise',
-        title: 'Build a Game Page',
-        content: 'Create HTML structure:',
-        exercise: 'Build an HTML page for a game with: header, game area, sidebar, and footer'
-      }
-    ]
-  }
-];
 
 const Tutorials = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState<string>('All');
-  const [completedTutorials, setCompletedTutorials] = useState<Set<string>>(new Set());
+  const [tutorials, setTutorials] = useState<LanguageTutorial[]>([]);
+  const [userProgress, setUserProgress] = useState<Map<string, UserProgress>>(new Map());
   const [expandedTutorial, setExpandedTutorial] = useState<string | null>(null);
+  const [currentSection, setCurrentSection] = useState<Map<string, number>>(new Map());
+  const [loading, setLoading] = useState(true);
 
-  const languages = ['All', ...Array.from(new Set(languageTutorials.map(t => t.language)))];
+  // Load tutorials from Supabase
+  useEffect(() => {
+    const loadTutorials = async () => {
+      try {
+        const { data: tutorialsData, error: tutorialsError } = await supabase
+          .from('tutorials')
+          .select('*')
+          .eq('category', 'language')
+          .eq('is_published', true)
+          .order('order_index');
+
+        if (tutorialsError) {
+          console.error('Error loading tutorials:', tutorialsError);
+          return;
+        }
+
+        setTutorials((tutorialsData || []).map(tutorial => ({
+          ...tutorial,
+          content: tutorial.content as unknown as { sections: TutorialSection[] }
+        })));
+
+        // Load user progress if authenticated
+        if (user) {
+          const { data: progressData } = await supabase
+            .from('user_tutorial_progress')
+            .select('*')
+            .eq('user_id', user.id);
+
+          if (progressData) {
+            const progressMap = new Map();
+            progressData.forEach(progress => {
+              progressMap.set(progress.tutorial_id, progress);
+            });
+            setUserProgress(progressMap);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTutorials();
+  }, [user]);
+
+  const languages = ['All', ...Array.from(new Set(tutorials.map(t => {
+    const mainTag = t.tags?.[0] || 'Programming';
+    return mainTag;
+  })))];
+
   const filteredTutorials = selectedLanguage === 'All' 
-    ? languageTutorials 
-    : languageTutorials.filter(t => t.language === selectedLanguage);
+    ? tutorials 
+    : tutorials.filter(t => t.tags?.includes(selectedLanguage));
 
-  const completedCount = completedTutorials.size;
-  const completionRate = languageTutorials.length > 0 ? (completedCount / languageTutorials.length) * 100 : 0;
+  const completedCount = Array.from(userProgress.values()).filter(p => p.is_completed).length;
+  const completionRate = tutorials.length > 0 ? (completedCount / tutorials.length) * 100 : 0;
 
-  const startTutorial = (tutorialId: string) => {
+  const startTutorial = async (tutorialId: string) => {
     if (!user) {
       toast({
         title: "Sign in required",
@@ -371,22 +140,89 @@ const Tutorials = () => {
     }
 
     setExpandedTutorial(expandedTutorial === tutorialId ? null : tutorialId);
+    
+    // Initialize progress if not exists
+    if (!userProgress.has(tutorialId)) {
+      const { error } = await supabase
+        .from('user_tutorial_progress')
+        .insert({
+          user_id: user.id,
+          tutorial_id: tutorialId,
+          progress_data: { completed_sections: [], current_section: 0 }
+        });
+
+      if (!error) {
+        setUserProgress(prev => new Map(prev.set(tutorialId, {
+          tutorial_id: tutorialId,
+          is_completed: false,
+          progress_data: { completed_sections: [], current_section: 0 }
+        })));
+      }
+    }
+
     toast({
       title: "Tutorial Started!",
       description: "Work through the sections to complete this tutorial"
     });
   };
 
-  const completeTutorial = (tutorialId: string, xpReward: number) => {
+  const completeSection = async (tutorialId: string, sectionIndex: number) => {
     if (!user) return;
 
-    setCompletedTutorials(prev => new Set([...prev, tutorialId]));
-    setExpandedTutorial(null);
-    
-    toast({
-      title: "Tutorial Completed! 🎉",
-      description: `You earned ${xpReward} XP!`
-    });
+    const progress = userProgress.get(tutorialId);
+    if (!progress) return;
+
+    const completedSections = [...progress.progress_data.completed_sections];
+    if (!completedSections.includes(sectionIndex)) {
+      completedSections.push(sectionIndex);
+    }
+
+    const tutorial = tutorials.find(t => t.id === tutorialId);
+    const totalSections = tutorial?.content?.sections?.length || 0;
+    const isCompleted = completedSections.length === totalSections;
+
+    const updatedProgress = {
+      ...progress,
+      progress_data: {
+        completed_sections: completedSections,
+        current_section: Math.min(sectionIndex + 1, totalSections - 1)
+      },
+      is_completed: isCompleted
+    };
+
+    const { error } = await supabase
+      .from('user_tutorial_progress')
+      .update({
+        progress_data: updatedProgress.progress_data,
+        is_completed: isCompleted,
+        completed_at: isCompleted ? new Date().toISOString() : null
+      })
+      .eq('user_id', user.id)
+      .eq('tutorial_id', tutorialId);
+
+    if (!error) {
+      setUserProgress(prev => new Map(prev.set(tutorialId, updatedProgress)));
+      
+      if (isCompleted && tutorial) {
+        // Award XP
+        const { error: xpError } = await supabase
+          .from('profiles')
+          .update({ 
+            xp: (user as any).xp + tutorial.xp_reward 
+          })
+          .eq('user_id', user.id);
+
+        toast({
+          title: "Tutorial Completed! 🎉",
+          description: `You earned ${tutorial.xp_reward} XP!`
+        });
+      } else {
+        toast({
+          title: "Section Completed!",
+          description: "Great progress! Keep going."
+        });
+      }
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -405,9 +241,48 @@ const Tutorials = () => {
       case 'react': return '⚛️';
       case 'css': return '🎨';
       case 'html': return '🌐';
+      case 'programming': return '💻';
+      case 'variables': return '📦';
+      case 'functions': return '⚙️';
+      case 'components': return '🧩';
+      case 'styling': return '🎨';
+      case 'data types': return '📊';
       default: return '📚';
     }
   };
+
+  const getSectionIcon = (type: string) => {
+    switch (type) {
+      case 'theory': return <BookOpen className="h-4 w-4" />;
+      case 'code': return <Code className="h-4 w-4" />;
+      case 'exercise': return <Target className="h-4 w-4" />;
+      default: return <BookOpen className="h-4 w-4" />;
+    }
+  };
+
+  const calculateProgress = (tutorialId: string, tutorial: LanguageTutorial) => {
+    const progress = userProgress.get(tutorialId);
+    if (!progress) return 0;
+    
+    const totalSections = tutorial.content?.sections?.length || 0;
+    const completedSections = progress.progress_data.completed_sections.length;
+    return totalSections > 0 ? (completedSections / totalSections) * 100 : 0;
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading tutorials...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -431,7 +306,7 @@ const Tutorials = () => {
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium">Progress</span>
                     <span className="text-sm text-muted-foreground">
-                      {completedCount}/{languageTutorials.length} completed
+                      {completedCount}/{tutorials.length} completed
                     </span>
                   </div>
                   <Progress value={completionRate} className="h-2" />
@@ -454,8 +329,11 @@ const Tutorials = () => {
           {/* Tutorials Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTutorials.map((tutorial) => {
-              const isCompleted = completedTutorials.has(tutorial.id);
+              const progress = userProgress.get(tutorial.id);
+              const isCompleted = progress?.is_completed || false;
               const isExpanded = expandedTutorial === tutorial.id;
+              const progressPercent = calculateProgress(tutorial.id, tutorial);
+              const mainLanguage = tutorial.tags?.[0] || 'Programming';
               
               return (
                 <Card 
@@ -465,8 +343,8 @@ const Tutorials = () => {
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl">{getLanguageIcon(tutorial.language)}</span>
-                        <Badge variant="outline">{tutorial.language}</Badge>
+                        <span className="text-2xl">{getLanguageIcon(mainLanguage)}</span>
+                        <Badge variant="outline">{mainLanguage}</Badge>
                       </div>
                       {isCompleted && (
                         <CheckCircle className="h-5 w-5 text-green-500" />
@@ -494,26 +372,74 @@ const Tutorials = () => {
                       {tutorial.difficulty}
                     </Badge>
 
-                    {/* Tutorial Sections Preview */}
-                    {isExpanded && (
+                    {/* Progress Bar */}
+                    {user && progressPercent > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Progress</span>
+                          <span>{Math.round(progressPercent)}%</span>
+                        </div>
+                        <Progress value={progressPercent} className="h-2" />
+                      </div>
+                    )}
+
+                    {/* Tutorial Sections */}
+                    {isExpanded && tutorial.content?.sections && (
                       <div className="space-y-3 border-t pt-4">
-                        <h4 className="font-medium text-sm">Tutorial Sections:</h4>
-                        {tutorial.sections.map((section, index) => (
-                          <div key={index} className="p-3 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-2 mb-2">
-                              {section.type === 'theory' && <BookOpen className="h-4 w-4" />}
-                              {section.type === 'code' && <Code className="h-4 w-4" />}
-                              {section.type === 'exercise' && <Target className="h-4 w-4" />}
-                              <span className="font-medium text-sm">{section.title}</span>
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-medium text-sm">Tutorial Sections:</h4>
+                          <span className="text-xs text-muted-foreground">
+                            {progress?.progress_data.completed_sections.length || 0}/{tutorial.content.sections.length} completed
+                          </span>
+                        </div>
+                        {tutorial.content.sections.map((section, index) => {
+                          const isCompleted = progress?.progress_data.completed_sections.includes(index) || false;
+                          const isCurrent = progress?.progress_data.current_section === index;
+                          
+                          return (
+                            <div 
+                              key={index} 
+                              className={`p-3 rounded-lg border transition-colors ${
+                                isCompleted ? 'bg-green-50 border-green-200' : 
+                                isCurrent ? 'bg-primary/10 border-primary/20' : 
+                                'bg-muted/50 border-muted'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  {getSectionIcon(section.type)}
+                                  <span className="font-medium text-sm">{section.title}</span>
+                                  {isCompleted && <CheckCircle className="h-3 w-3 text-green-500" />}
+                                </div>
+                                <span className="text-xs text-muted-foreground">{section.duration}min</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground mb-2">{section.content}</p>
+                              
+                              {section.code && (
+                                <pre className="mt-2 p-2 bg-background rounded text-xs overflow-x-auto border">
+                                  <code>{section.code.slice(0, 150)}...</code>
+                                </pre>
+                              )}
+                              
+                              {section.exercise && (
+                                <div className="mt-2 p-2 bg-blue-50 rounded text-xs border border-blue-200">
+                                  <strong>Exercise:</strong> {section.exercise}
+                                </div>
+                              )}
+
+                              {user && !isCompleted && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="mt-2"
+                                  onClick={() => completeSection(tutorial.id, index)}
+                                >
+                                  Mark Complete
+                                </Button>
+                              )}
                             </div>
-                            <p className="text-xs text-muted-foreground">{section.content}</p>
-                            {section.code && (
-                              <pre className="mt-2 p-2 bg-background rounded text-xs overflow-x-auto">
-                                <code>{section.code.slice(0, 100)}...</code>
-                              </pre>
-                            )}
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
 
@@ -523,20 +449,9 @@ const Tutorials = () => {
                         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-adventure transition-adventure"
                         disabled={isCompleted}
                       >
-                        <Play className="h-4 w-4 mr-2" />
-                        {isCompleted ? 'Completed' : isExpanded ? 'Collapse' : 'Start Tutorial'}
+                        {isExpanded ? <ChevronUp className="h-4 w-4 mr-2" /> : <ChevronDown className="h-4 w-4 mr-2" />}
+                        {isCompleted ? 'Completed ✓' : isExpanded ? 'Collapse' : 'Start Tutorial'}
                       </Button>
-                      
-                      {isExpanded && !isCompleted && (
-                        <Button 
-                          onClick={() => completeTutorial(tutorial.id, tutorial.xp_reward)}
-                          variant="outline"
-                          className="w-full"
-                        >
-                          <Trophy className="h-4 w-4 mr-2" />
-                          Complete Tutorial
-                        </Button>
-                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -544,23 +459,22 @@ const Tutorials = () => {
             })}
           </div>
 
-          {/* Empty State */}
-          {filteredTutorials.length === 0 && (
-            <div className="text-center py-12">
-              <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No tutorials available</h3>
-              <p className="text-muted-foreground mb-4">
-                {selectedLanguage === 'All' ? 'Check back soon for new tutorials!' : `No ${selectedLanguage} tutorials available.`}
-              </p>
-              <Button 
-                variant="outline" 
-                onClick={() => setSelectedLanguage('All')}
-                className="border-primary/30 text-primary hover:bg-primary/10"
-              >
-                View All Tutorials
-              </Button>
-            </div>
-          )}
+              {filteredTutorials.length === 0 && (
+                <div className="text-center py-12">
+                  <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">No tutorials available</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {selectedLanguage === 'All' ? 'Check back soon for new tutorials!' : `No ${selectedLanguage} tutorials available.`}
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setSelectedLanguage('All')}
+                    className="border border-primary/30 text-primary hover:bg-primary/10"
+                  >
+                    View All Tutorials
+                  </Button>
+                </div>
+              )}
         </div>
       </main>
 
