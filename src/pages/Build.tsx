@@ -39,7 +39,6 @@ const Build = () => {
   const [editingProject, setEditingProject] = useState<PortfolioProject | undefined>();
   const [publicProjects, setPublicProjects] = useState<PortfolioProject[]>([]);
   const [loadingPublic, setLoadingPublic] = useState(false);
-  
 
   // Project building tutorials - completely separate from main tutorials page
   const buildTutorials = [
@@ -156,10 +155,6 @@ const Build = () => {
     }
   };
 
-  const startProject = (projectId: number) => {
-    setActiveProject(projectId);
-  };
-
   // Load featured public projects for inspiration
   useEffect(() => {
     const loadPublicProjects = async () => {
@@ -243,7 +238,7 @@ const Build = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {buildTutorials.map((tutorial) => {
-                  const categoryIcons = {
+                  const categoryIcons: Record<string, JSX.Element> = {
                     'Full Stack': <Code className="h-6 w-6" />,
                     'Real-time': <Database className="h-6 w-6" />,
                     'Tools': <Palette className="h-6 w-6" />,
@@ -290,13 +285,13 @@ const Build = () => {
                             ))}
                             {tutorial.steps.length > 3 && (
                               <div className="text-xs text-muted-foreground pl-5">
-                                +{tutorial.steps.length - 3} more steps...
+                                +{tutorial.steps.length - 3} more steps
                               </div>
                             )}
                           </div>
                         </div>
 
-                        {/* Tags */}
+                        {/* Tech Tags */}
                         <div className="flex flex-wrap gap-1">
                           {tutorial.tags.map((tag) => (
                             <Badge key={tag} variant="outline" className="text-xs">
@@ -305,16 +300,9 @@ const Build = () => {
                           ))}
                         </div>
 
-                        <Button 
-                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                          onClick={() => {
-                            // For now, show a toast indicating this is a demo 
-                            // In a real app, this would start the tutorial
-                            alert(`Starting "${tutorial.title}" tutorial - This is a demo!`);
-                          }}
-                        >
-                          <Hammer className="h-4 w-4 mr-2" />
-                          Start Building
+                        <Button className="w-full" variant="outline">
+                          <Play className="h-4 w-4 mr-2" />
+                          Start Tutorial
                         </Button>
                       </CardContent>
                     </Card>
