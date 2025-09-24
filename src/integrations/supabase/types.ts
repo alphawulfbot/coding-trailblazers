@@ -154,6 +154,132 @@ export type Database = {
           },
         ]
       }
+      portfolio_projects: {
+        Row: {
+          completed_at: string | null
+          completion_percentage: number | null
+          created_at: string
+          demo_url: string | null
+          description: string | null
+          featured: boolean | null
+          github_url: string | null
+          id: string
+          image_url: string | null
+          is_public: boolean | null
+          likes_count: number | null
+          lines_of_code: number | null
+          project_type: string | null
+          status: string | null
+          tech_stack: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+          views_count: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          completion_percentage?: number | null
+          created_at?: string
+          demo_url?: string | null
+          description?: string | null
+          featured?: boolean | null
+          github_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_public?: boolean | null
+          likes_count?: number | null
+          lines_of_code?: number | null
+          project_type?: string | null
+          status?: string | null
+          tech_stack?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+          views_count?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          completion_percentage?: number | null
+          created_at?: string
+          demo_url?: string | null
+          description?: string | null
+          featured?: boolean | null
+          github_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_public?: boolean | null
+          likes_count?: number | null
+          lines_of_code?: number | null
+          project_type?: string | null
+          status?: string | null
+          tech_stack?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          views_count?: number | null
+        }
+        Relationships: []
+      }
+      portfolio_stats: {
+        Row: {
+          code_quality_score: number | null
+          completed_projects: number | null
+          created_at: string
+          github_connected: boolean | null
+          github_repos_count: number | null
+          github_username: string | null
+          id: string
+          live_deployments_count: number | null
+          team_projects_count: number | null
+          technologies_mastered: string[] | null
+          total_likes: number | null
+          total_lines_of_code: number | null
+          total_projects: number | null
+          total_views: number | null
+          updated_at: string
+          uptime_percentage: number | null
+          user_id: string
+        }
+        Insert: {
+          code_quality_score?: number | null
+          completed_projects?: number | null
+          created_at?: string
+          github_connected?: boolean | null
+          github_repos_count?: number | null
+          github_username?: string | null
+          id?: string
+          live_deployments_count?: number | null
+          team_projects_count?: number | null
+          technologies_mastered?: string[] | null
+          total_likes?: number | null
+          total_lines_of_code?: number | null
+          total_projects?: number | null
+          total_views?: number | null
+          updated_at?: string
+          uptime_percentage?: number | null
+          user_id: string
+        }
+        Update: {
+          code_quality_score?: number | null
+          completed_projects?: number | null
+          created_at?: string
+          github_connected?: boolean | null
+          github_repos_count?: number | null
+          github_username?: string | null
+          id?: string
+          live_deployments_count?: number | null
+          team_projects_count?: number | null
+          technologies_mastered?: string[] | null
+          total_likes?: number | null
+          total_lines_of_code?: number | null
+          total_projects?: number | null
+          total_views?: number | null
+          updated_at?: string
+          uptime_percentage?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -201,6 +327,108 @@ export type Database = {
           xp?: number | null
         }
         Relationships: []
+      }
+      project_likes: {
+        Row: {
+          id: string
+          liked_at: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          liked_at?: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          liked_at?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_likes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_views: {
+        Row: {
+          id: string
+          ip_address: unknown | null
+          project_id: string
+          user_agent: string | null
+          viewed_at: string
+          viewer_id: string | null
+        }
+        Insert: {
+          id?: string
+          ip_address?: unknown | null
+          project_id: string
+          user_agent?: string | null
+          viewed_at?: string
+          viewer_id?: string | null
+        }
+        Update: {
+          id?: string
+          ip_address?: unknown | null
+          project_id?: string
+          user_agent?: string | null
+          viewed_at?: string
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_views_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_collaborations: {
+        Row: {
+          collaborator_id: string
+          id: string
+          joined_at: string
+          project_id: string
+          role: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          collaborator_id: string
+          id?: string
+          joined_at?: string
+          project_id: string
+          role?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          collaborator_id?: string
+          id?: string
+          joined_at?: string
+          project_id?: string
+          role?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_collaborations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tutorials: {
         Row: {
@@ -394,6 +622,19 @@ export type Database = {
     Functions: {
       can_view_profile_stats: {
         Args: { profile_user_id: string }
+        Returns: boolean
+      }
+      increment_project_views: {
+        Args: {
+          project_uuid: string
+          user_agent_text?: string
+          viewer_ip?: unknown
+          viewer_uuid?: string
+        }
+        Returns: undefined
+      }
+      toggle_project_like: {
+        Args: { project_uuid: string; user_uuid: string }
         Returns: boolean
       }
     }
