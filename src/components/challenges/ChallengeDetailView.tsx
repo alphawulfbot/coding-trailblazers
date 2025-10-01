@@ -73,10 +73,10 @@ export const ChallengeDetailView = ({ challenge, onBack }: ChallengeDetailViewPr
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'advanced': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-      default: return 'bg-muted text-muted-foreground';
+      case 'beginner': return 'bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-400';
+      case 'intermediate': return 'bg-yellow-100 text-yellow-900 dark:bg-yellow-900/30 dark:text-yellow-400';
+      case 'advanced': return 'bg-red-100 text-red-900 dark:bg-red-900/30 dark:text-red-400';
+      default: return 'bg-muted text-foreground';
     }
   };
 
@@ -186,10 +186,10 @@ export const ChallengeDetailView = ({ challenge, onBack }: ChallengeDetailViewPr
                     key={index} 
                     className={`border rounded-lg p-4 transition-all ${
                       isStepCompleted(index) 
-                        ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' 
+                        ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800 text-foreground' 
                         : isCurrentStep(index)
-                          ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800'
-                          : 'bg-card'
+                          ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800 text-foreground'
+                          : 'bg-card text-foreground'
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -203,7 +203,7 @@ export const ChallengeDetailView = ({ challenge, onBack }: ChallengeDetailViewPr
                       
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className={`font-medium ${isStepCompleted(index) ? 'line-through text-muted-foreground' : ''}`}>
+                          <h4 className={`font-medium ${isStepCompleted(index) ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                             Step {index + 1}: {step.title}
                           </h4>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -212,7 +212,7 @@ export const ChallengeDetailView = ({ challenge, onBack }: ChallengeDetailViewPr
                           </div>
                         </div>
                         
-                        <p className={`text-sm mb-3 ${isStepCompleted(index) ? 'text-muted-foreground' : 'text-foreground'}`}>
+                        <p className={`text-sm mb-3 ${isStepCompleted(index) ? 'text-muted-foreground' : 'text-foreground dark:text-foreground'}`}>
                           {step.description}
                         </p>
 
@@ -223,7 +223,7 @@ export const ChallengeDetailView = ({ challenge, onBack }: ChallengeDetailViewPr
                               {step.tasks.map((task, taskIndex) => (
                                 <li key={taskIndex} className="flex items-center gap-2">
                                   <div className="h-1 w-1 rounded-full bg-muted-foreground" />
-                                  <span className={isStepCompleted(index) ? 'text-muted-foreground' : ''}>
+                                  <span className={isStepCompleted(index) ? 'text-muted-foreground' : 'text-foreground'}>
                                     {task}
                                   </span>
                                 </li>

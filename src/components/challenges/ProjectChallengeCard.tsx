@@ -22,10 +22,10 @@ export const ProjectChallengeCard = ({ challenge, onStartChallenge }: ProjectCha
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'advanced': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-      default: return 'bg-muted text-muted-foreground';
+      case 'beginner': return 'bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-400';
+      case 'intermediate': return 'bg-yellow-100 text-yellow-900 dark:bg-yellow-900/30 dark:text-yellow-400';
+      case 'advanced': return 'bg-red-100 text-red-900 dark:bg-red-900/30 dark:text-red-400';
+      default: return 'bg-muted text-foreground';
     }
   };
 
@@ -58,7 +58,7 @@ export const ProjectChallengeCard = ({ challenge, onStartChallenge }: ProjectCha
           </Badge>
         </div>
         <CardTitle className="text-xl text-foreground">{challenge.title}</CardTitle>
-        <CardDescription className="text-sm">{challenge.description}</CardDescription>
+        <CardDescription className="text-sm text-muted-foreground">{challenge.description}</CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-4">
@@ -104,18 +104,18 @@ export const ProjectChallengeCard = ({ challenge, onStartChallenge }: ProjectCha
 
         {/* Steps Preview */}
         <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Challenge Steps:</p>
+          <p className="text-sm font-medium text-foreground">Challenge Steps:</p>
           <div className="space-y-1">
             {challenge.steps.slice(0, 3).map((step, index) => (
-              <div key={index} className="flex items-center gap-2 text-xs">
+              <div key={index} className="flex items-center gap-2 text-xs text-foreground">
                 <div className={`h-2 w-2 rounded-full ${
                   progress?.completed_steps.includes(index) 
                     ? 'bg-green-500' 
                     : index === progress?.current_step 
                       ? 'bg-blue-500' 
-                      : 'bg-gray-300'
+                      : 'bg-gray-300 dark:bg-gray-600'
                 }`} />
-                <span className={progress?.completed_steps.includes(index) ? 'line-through text-muted-foreground' : ''}>
+                <span className={progress?.completed_steps.includes(index) ? 'line-through text-muted-foreground' : 'text-foreground'}>
                   {step.title}
                 </span>
               </div>
