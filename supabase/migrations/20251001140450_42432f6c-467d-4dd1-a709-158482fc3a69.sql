@@ -1,0 +1,18 @@
+-- Add more complete lessons to existing courses
+INSERT INTO lessons (course_id, title, description, order_index, duration_minutes, xp_reward, content)
+VALUES
+  -- TypeScript course lessons
+  ('550e8400-e29b-41d4-a716-446655440004', 'Introduction to TypeScript', 'Why TypeScript and basic setup', 1, 45, 55, '{"sections": [{"type": "text", "content": "TypeScript adds static typing to JavaScript."}, {"type": "code", "content": "let message: string = \"Hello TypeScript\";\nlet count: number = 42;\nlet isActive: boolean = true;"}]}'::jsonb),
+  ('550e8400-e29b-41d4-a716-446655440004', 'Interfaces & Types', 'Defining custom types', 2, 50, 60, '{"sections": [{"type": "text", "content": "Interfaces define object shapes."}, {"type": "code", "content": "interface User {\n  id: number;\n  name: string;\n  email: string;\n}\n\ntype Status = \"active\" | \"inactive\";"}]}'::jsonb),
+  ('550e8400-e29b-41d4-a716-446655440004', 'Generics', 'Creating reusable type-safe functions', 3, 55, 65, '{"sections": [{"type": "text", "content": "Generics enable flexible, reusable components."}, {"type": "code", "content": "function identity<T>(arg: T): T {\n  return arg;\n}\n\nconst result = identity<string>(\"hello\");"}]}'::jsonb),
+  
+  -- Node.js course lessons
+  ('550e8400-e29b-41d4-a716-446655440005', 'Node.js Fundamentals', 'Understanding the Node runtime', 1, 40, 50, '{"sections": [{"type": "text", "content": "Node.js allows JavaScript on the server."}, {"type": "code", "content": "const http = require(\"http\");\n\nconst server = http.createServer((req, res) => {\n  res.end(\"Hello from Node.js!\");\n});\n\nserver.listen(3000);"}]}'::jsonb),
+  ('550e8400-e29b-41d4-a716-446655440005', 'Express Framework', 'Building web servers with Express', 2, 50, 60, '{"sections": [{"type": "text", "content": "Express simplifies creating web servers."}, {"type": "code", "content": "const express = require(\"express\");\nconst app = express();\n\napp.get(\"/\", (req, res) => {\n  res.json({ message: \"Hello API\" });\n});\n\napp.listen(3000);"}]}'::jsonb),
+  ('550e8400-e29b-41d4-a716-446655440005', 'RESTful APIs', 'Creating REST API endpoints', 3, 55, 65, '{"sections": [{"type": "text", "content": "REST APIs follow standard HTTP methods."}, {"type": "code", "content": "app.get(\"/users\", (req, res) => {\n  res.json(users);\n});\n\napp.post(\"/users\", (req, res) => {\n  const newUser = req.body;\n  users.push(newUser);\n  res.status(201).json(newUser);\n});"}]}'::jsonb),
+  
+  -- Full Stack course lessons
+  ('550e8400-e29b-41d4-a716-446655440006', 'Full Stack Architecture', 'Understanding the full stack', 1, 60, 75, '{"sections": [{"type": "text", "content": "Full stack combines frontend, backend, and database."}, {"type": "code", "content": "Frontend (React) <-> API (Express) <-> Database (PostgreSQL)"}]}'::jsonb),
+  ('550e8400-e29b-41d4-a716-446655440006', 'Authentication Flow', 'Implementing user authentication', 2, 70, 85, '{"sections": [{"type": "text", "content": "Secure authentication protects user data."}, {"type": "code", "content": "const jwt = require(\"jsonwebtoken\");\n\napp.post(\"/login\", async (req, res) => {\n  const { email, password } = req.body;\n  const user = await authenticateUser(email, password);\n  const token = jwt.sign({ userId: user.id }, SECRET);\n  res.json({ token });\n});"}]}'::jsonb),
+  ('550e8400-e29b-41d4-a716-446655440006', 'Deployment', 'Deploying your full stack app', 3, 65, 80, '{"sections": [{"type": "text", "content": "Deploy frontend and backend separately."}, {"type": "code", "content": "# Build frontend\nnpm run build\n\n# Deploy to Vercel/Netlify\nvercel deploy\n\n# Deploy backend to Railway/Render\ngit push railway main"}]}'::jsonb)
+ON CONFLICT DO NOTHING;

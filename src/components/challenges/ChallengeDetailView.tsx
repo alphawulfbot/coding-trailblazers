@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
 import { 
   ArrowLeft, 
   CheckCircle, 
@@ -15,7 +16,9 @@ import {
   FileText,
   Target,
   Award,
-  BookOpen
+  BookOpen,
+  Upload,
+  File
 } from 'lucide-react';
 import { ProjectChallenge, useProjectChallenges, ChallengeStep } from '@/hooks/useProjectChallenges';
 
@@ -30,13 +33,23 @@ export const ChallengeDetailView = ({ challenge, onBack }: ChallengeDetailViewPr
     getCompletionPercentage, 
     completeStep, 
     uncompleteStep,
-    updateNotes
+    updateNotes,
+    uploadStepFile
   } = useProjectChallenges();
 
   const progress = getChallengeProgress(challenge.id);
   const completionPercentage = getCompletionPercentage(challenge.id);
   const [notes, setNotes] = useState(progress?.notes || '');
   const [savingNotes, setSavingNotes] = useState(false);
+  const [uploadingStep, setUploadingStep] = useState<number | null>(null);
+  const fileInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
+
+  const handleFileUpload = async (stepIndex: number, file: File) => {
+    setUploadingStep(stepIndex);
+    const result = await uploadStepFile(challenge.id, stepIndex, file);
+    setUploadingStep(null);
+    return result;
+  };
 
   const handleStepToggle = async (stepIndex: number) => {
     const isCompleted = progress?.completed_steps.includes(stepIndex) || false;
@@ -52,6 +65,10 @@ export const ChallengeDetailView = ({ challenge, onBack }: ChallengeDetailViewPr
     setSavingNotes(true);
     await updateNotes(challenge.id, notes);
     setSavingNotes(false);
+  };
+
+  const getStepSubmission = (stepIndex: number) => {
+    return progress?.progress_data?.step_submissions?.[stepIndex];
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -162,82 +179,129 @@ export const ChallengeDetailView = ({ challenge, onBack }: ChallengeDetailViewPr
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {challenge.steps.map((step: ChallengeStep, index) => (
-                <div 
-                  key={index} 
-                  className={`border rounded-lg p-4 transition-all cursor-pointer hover:shadow-sm ${
-                    isStepCompleted(index) 
-                      ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' 
-                      : isCurrentStep(index)
-                        ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800'
-                        : 'bg-card'
-                  }`}
-                  onClick={() => handleStepToggle(index)}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 mt-1">
-                      {isStepCompleted(index) ? (
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                      ) : (
-                        <Circle className="h-5 w-5 text-muted-foreground" />
-                      )}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className={`font-medium ${isStepCompleted(index) ? 'line-through text-muted-foreground' : ''}`}>
-                          Step {index + 1}: {step.title}
-                        </h4>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Clock className="h-4 w-4" />
-                          {step.estimated_time}min
-                        </div>
+              {challenge.steps.map((step: ChallengeStep, index) => {
+                const stepSubmission = getStepSubmission(index);
+                return (
+                  <div 
+                    key={index} 
+                    className={`border rounded-lg p-4 transition-all ${
+                      isStepCompleted(index) 
+                        ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' 
+                        : isCurrentStep(index)
+                          ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800'
+                          : 'bg-card'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 mt-1">
+                        {isStepCompleted(index) ? (
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <Circle className="h-5 w-5 text-muted-foreground" />
+                        )}
                       </div>
                       
-                      <p className={`text-sm mb-3 ${isStepCompleted(index) ? 'text-muted-foreground' : 'text-foreground'}`}>
-                        {step.description}
-                      </p>
-
-                      {step.tasks && step.tasks.length > 0 && (
-                        <div className="mb-3">
-                          <p className="text-sm font-medium mb-2">Tasks:</p>
-                          <ul className="text-sm space-y-1">
-                            {step.tasks.map((task, taskIndex) => (
-                              <li key={taskIndex} className="flex items-center gap-2">
-                                <div className="h-1 w-1 rounded-full bg-muted-foreground" />
-                                <span className={isStepCompleted(index) ? 'text-muted-foreground' : ''}>
-                                  {task}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {step.resources && step.resources.length > 0 && (
-                        <div>
-                          <p className="text-sm font-medium mb-2">Resources:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {step.resources.map((resource, resourceIndex) => (
-                              <a
-                                key={resourceIndex}
-                                href={resource}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <ExternalLink className="h-3 w-3" />
-                                Documentation
-                              </a>
-                            ))}
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className={`font-medium ${isStepCompleted(index) ? 'line-through text-muted-foreground' : ''}`}>
+                            Step {index + 1}: {step.title}
+                          </h4>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4" />
+                            {step.estimated_time}min
                           </div>
                         </div>
-                      )}
+                        
+                        <p className={`text-sm mb-3 ${isStepCompleted(index) ? 'text-muted-foreground' : 'text-foreground'}`}>
+                          {step.description}
+                        </p>
+
+                        {step.tasks && step.tasks.length > 0 && (
+                          <div className="mb-3">
+                            <p className="text-sm font-medium mb-2">Tasks:</p>
+                            <ul className="text-sm space-y-1">
+                              {step.tasks.map((task, taskIndex) => (
+                                <li key={taskIndex} className="flex items-center gap-2">
+                                  <div className="h-1 w-1 rounded-full bg-muted-foreground" />
+                                  <span className={isStepCompleted(index) ? 'text-muted-foreground' : ''}>
+                                    {task}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {step.resources && step.resources.length > 0 && (
+                          <div className="mb-3">
+                            <p className="text-sm font-medium mb-2">Resources:</p>
+                            <div className="flex flex-wrap gap-2">
+                              {step.resources.map((resource, resourceIndex) => (
+                                <a
+                                  key={resourceIndex}
+                                  href={resource}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <ExternalLink className="h-3 w-3" />
+                                  Documentation
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* File Upload Section */}
+                        <div className="mt-4 pt-3 border-t">
+                          <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                            <Upload className="h-4 w-4" />
+                            Upload your work to complete this step
+                          </p>
+                          
+                          {stepSubmission ? (
+                            <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                              <div className="flex items-center gap-2 text-sm">
+                                <File className="h-4 w-4 text-green-600" />
+                                <span className="font-medium">{stepSubmission.fileName}</span>
+                                <span className="text-muted-foreground text-xs">
+                                  Uploaded {new Date(stepSubmission.uploadedAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                              {!isStepCompleted(index) && (
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleStepToggle(index)}
+                                  className="ml-2"
+                                >
+                                  Mark Complete
+                                </Button>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <Input
+                                ref={(el) => fileInputRefs.current[index] = el}
+                                type="file"
+                                className="flex-1"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleFileUpload(index, file);
+                                }}
+                                disabled={uploadingStep === index}
+                              />
+                              {uploadingStep === index && (
+                                <span className="text-sm text-muted-foreground">Uploading...</span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </CardContent>
           </Card>
         </div>

@@ -573,6 +573,7 @@ export type Database = {
           notes: string | null
           progress_data: Json | null
           started_at: string | null
+          step_submissions: Json | null
           updated_at: string
           user_id: string
         }
@@ -587,6 +588,7 @@ export type Database = {
           notes?: string | null
           progress_data?: Json | null
           started_at?: string | null
+          step_submissions?: Json | null
           updated_at?: string
           user_id: string
         }
@@ -601,6 +603,7 @@ export type Database = {
           notes?: string | null
           progress_data?: Json | null
           started_at?: string | null
+          step_submissions?: Json | null
           updated_at?: string
           user_id?: string
         }

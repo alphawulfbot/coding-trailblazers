@@ -163,6 +163,67 @@ export const useProjectChallenges = () => {
     }
   };
 
+  // Upload file for a step
+  const uploadStepFile = async (challengeId: string, stepIndex: number, file: File) => {
+    if (!user) return null;
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${challengeId}/step-${stepIndex}-${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('challenge-submissions')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('challenge-submissions')
+        .getPublicUrl(fileName);
+
+      // Update progress with file submission
+      const progress = userProgress.get(challengeId);
+      if (!progress) return null;
+
+      const stepSubmissions = progress.progress_data?.step_submissions || {};
+      stepSubmissions[stepIndex] = {
+        fileName: file.name,
+        filePath: fileName,
+        uploadedAt: new Date().toISOString()
+      };
+
+      const { error: updateError } = await supabase
+        .from('user_challenge_progress')
+        .update({ 
+          progress_data: { 
+            ...progress.progress_data,
+            step_submissions: stepSubmissions 
+          }
+        })
+        .eq('user_id', user.id)
+        .eq('challenge_id', challengeId);
+
+      if (updateError) throw updateError;
+
+      await fetchUserProgress();
+      
+      toast({
+        title: "File uploaded!",
+        description: "Your submission has been saved.",
+      });
+
+      return fileName;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload file. Please try again.",
+        variant: "destructive",
+      });
+      return null;
+    }
+  };
+
   // Complete a step in a challenge
   const completeStep = async (challengeId: string, stepIndex: number) => {
     if (!user) return false;
@@ -170,6 +231,17 @@ export const useProjectChallenges = () => {
     try {
       const progress = userProgress.get(challengeId);
       if (!progress) return false;
+
+      // Check if file is uploaded for this step
+      const stepSubmissions = progress.progress_data?.step_submissions || {};
+      if (!stepSubmissions[stepIndex]) {
+        toast({
+          title: "File required",
+          description: "Please upload your work before completing this step.",
+          variant: "destructive",
+        });
+        return false;
+      }
 
       const newCompletedSteps = [...progress.completed_steps];
       if (!newCompletedSteps.includes(stepIndex)) {
@@ -350,6 +422,7 @@ export const useProjectChallenges = () => {
     completeStep,
     uncompleteStep,
     updateNotes,
+    uploadStepFile,
     getChallengeProgress,
     getCompletionPercentage,
     refetchData: () => {
